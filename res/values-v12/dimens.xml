@@ -1,0 +1,13 @@
+<resources>
+    
+    <dimen name="top_left_radius_left">5dp</dimen>
+    <dimen name="top_right_radius_left">0dp</dimen>
+    <dimen name="bottom_left_radius_left">5dp</dimen>
+    <dimen name="bottom_right_radius_left">0dp</dimen>
+    
+    <dimen name="top_left_radius_right">0dp</dimen>
+    <dimen name="top_right_radius_right">5dp</dimen>
+    <dimen name="bottom_left_radius_right">0dp</dimen>
+    <dimen name="bottom_right_radius_right">5dp</dimen>
+
+</resources>

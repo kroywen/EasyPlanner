@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#458edb"
+        android:padding="10dp"
+        android:gravity="center">
+        
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/info_icon" />
+        
+        <TextView
+            android:id="@+id/titleView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:textColor="@android:color/white" />
+        
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@android:color/white"
+        android:gravity="center_horizontal"
+        android:padding="20dp">
+        
+        <TextView 
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#2c2c2c"
+            android:gravity="center_horizontal" />
+        
+        <LinearLayout 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+            
+            <Button
+                android:id="@+id/cancelBtn"
+                android:layout_width="100dp"
+                android:layout_height="35dp"
+                android:textColor="@color/btn_blue_text_color"
+                android:background="@drawable/btn_left_blue_background" />
+            
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@android:color/white" />
+            
+            <Button
+                android:id="@+id/okBtn"
+                android:layout_width="100dp"
+                android:layout_height="35dp"
+                android:textColor="@color/btn_blue_text_color"
+                android:background="@drawable/btn_right_blue_background" />
+            
+        </LinearLayout>
+        
+    </LinearLayout>
+
+</LinearLayout>

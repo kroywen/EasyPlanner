@@ -2,7 +2,43 @@
 <resources>
 
     <string name="app_name">Easy Planner</string>
-    <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    
+    <string name="classes">Classes</string>
+    <string name="no_classes">You have no classes yet</string>
+    <string name="add_class">Add class</string>
+    <string name="class_name">Class name</string>
+    <string name="class_name_empty">Please enter class name</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="tasks">Tasks</string>
+    <string name="no_tasks">You have no tasks yet</string>
+    <string name="today">Today</string>
+    <string name="all">All</string>
+    <string name="information">Information</string>
+    <string name="delete_class_confirmation">Deleting this item will remove all associated lesson plans you have created for that class</string>
+    <string name="delete">Delete</string>
+    <string name="settings">Settings</string>
+    <string name="contact_us">Contact Us</string>
+    <string name="visit_website">Visit Our Website</string>
+    <string name="review_app">Review This App</string>
+    <string name="report_bug">Report A Bug</string>
+    <string name="tell_friend">Tell A Friend</string>
+    <string name="link_dropbox">Link Dropbox</string>
+    <string name="unlink_dropbox">Unlink Dropbox</string>
+    <string name="link_google">Link Google</string>
+    <string name="unlink_google">Unlink Google</string>
+    <string name="link_evernote">Link Evernote</string>
+    <string name="unlink_evernote">Unlink Evernote</string>
+    
+    <string-array name="menu_items">
+        <item>@string/contact_us</item>
+        <item>@string/visit_website</item>
+        <item>@string/review_app</item>
+        <item>@string/report_bug</item>
+        <item>@string/tell_friend</item>
+        <item>@string/link_dropbox</item>
+        <item>@string/link_google</item>
+        <item>@string/link_evernote</item>
+    </string-array>
 
 </resources>
