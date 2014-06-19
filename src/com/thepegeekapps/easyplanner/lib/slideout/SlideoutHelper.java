@@ -45,7 +45,7 @@ public class SlideoutHelper {
 	}
 
 	public SlideoutHelper(Activity activity) {
-		this(activity, false);
+		this(activity, true);
 	}
 	
 	public SlideoutHelper(Activity activity, boolean reverse) {
@@ -57,16 +57,9 @@ public class SlideoutHelper {
 		mActivity.setContentView(R.layout.slideout);
 		mCover = (ImageView) mActivity.findViewById(R.id.slidedout_cover);
 		mCover.setImageBitmap(sCoverBitmap);
-		mCover.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				close();
-			}
-		});
-		int x = (int) (sWidth * 1.2f);
 		if (mReverse) {
 			@SuppressWarnings("deprecation")
-			final android.widget.AbsoluteLayout.LayoutParams lp = new android.widget.AbsoluteLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, x, 0);
+			final android.widget.AbsoluteLayout.LayoutParams lp = new android.widget.AbsoluteLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, sWidth, 0);
 			mActivity.findViewById(R.id.slideout_placeholder).setLayoutParams(lp);
 		} else{
 			@SuppressWarnings("deprecation")
@@ -118,6 +111,13 @@ public class SlideoutHelper {
 				@SuppressWarnings("deprecation")
 				final android.widget.AbsoluteLayout.LayoutParams lp = new android.widget.AbsoluteLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, -shift, 0);
 				mCover.setLayoutParams(lp);
+				mCover.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						mCover.setOnClickListener(null);
+						close();
+					}
+				});
 			}
 		});
 
@@ -144,7 +144,7 @@ public class SlideoutHelper {
 	private static final int DURATION_MS = 400;
 	private ImageView mCover;
 	private Activity mActivity;
-	private boolean mReverse = false;
+	private boolean mReverse = true;
 	private Animation mStartAnimation;
 	private Animation mStopAnimation;
 }

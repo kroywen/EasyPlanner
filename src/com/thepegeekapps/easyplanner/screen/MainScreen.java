@@ -55,11 +55,16 @@ public class MainScreen extends FragmentActivity implements OnClickListener, OnP
 		
 		addClassBtn = findViewById(R.id.addClassBtn);
 		addClassBtn.setOnClickListener(this);
-		
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
 		findViewById(R.id.menuBtn).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				int width = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics());
+				findViewById(R.id.menuBtn).setOnClickListener(null);
+				int width = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, getResources().getDisplayMetrics());
 				SlideoutActivity.prepare(MainScreen.this, R.id.inner_content, width);
 				startActivity(new Intent(MainScreen.this, MenuScreen.class));
 				overridePendingTransition(0, 0);

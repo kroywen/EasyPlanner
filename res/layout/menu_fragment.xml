@@ -2,6 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="horizontal">
+    
+<RelativeLayout 
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_weight="1">
+<LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical" 
     android:background="#344c6b">
     
@@ -69,8 +78,21 @@
         android:layout_height="wrap_content"
         android:dividerHeight="1px"
         android:cacheColorHint="@android:color/transparent"
-        android:listSelector="@drawable/list_item_selector"
         android:divider="#2a4464" />
-        
+
+</LinearLayout>
+
+<View
+    android:layout_width="19px"
+    android:layout_height="match_parent"
+    android:layout_alignParentLeft="true"
+    android:background="@drawable/menu_shadow_bitmap" />
+
+</RelativeLayout>
+
+<View 
+    android:layout_width="50dip"
+    android:layout_height="match_parent"
+    android:background="#344c6b" />
 
 </LinearLayout>

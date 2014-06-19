@@ -55,15 +55,17 @@ public final class R {
         public static final int logo=0x7f020016;
         public static final int logo2=0x7f020017;
         public static final int menu_icon=0x7f020018;
-        public static final int radoigroup_background=0x7f020019;
-        public static final int remove_icon=0x7f02001a;
-        public static final int report_bug_icon=0x7f02001b;
-        public static final int review_app_icon=0x7f02001c;
-        public static final int ribbon=0x7f02001d;
-        public static final int settings_icon=0x7f02001e;
-        public static final int splash=0x7f02001f;
-        public static final int tell_friend_icon=0x7f020020;
-        public static final int visit_site_icon=0x7f020021;
+        public static final int menu_shadow=0x7f020019;
+        public static final int menu_shadow_bitmap=0x7f02001a;
+        public static final int radoigroup_background=0x7f02001b;
+        public static final int remove_icon=0x7f02001c;
+        public static final int report_bug_icon=0x7f02001d;
+        public static final int review_app_icon=0x7f02001e;
+        public static final int ribbon=0x7f02001f;
+        public static final int settings_icon=0x7f020020;
+        public static final int splash=0x7f020021;
+        public static final int tell_friend_icon=0x7f020022;
+        public static final int visit_site_icon=0x7f020023;
     }
     public static final class id {
         public static final int addClassBtn=0x7f090015;

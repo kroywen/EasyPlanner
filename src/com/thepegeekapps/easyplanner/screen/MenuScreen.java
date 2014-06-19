@@ -16,7 +16,7 @@ public class MenuScreen extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    
-	    mSlideoutHelper = new SlideoutHelper(this);
+	    mSlideoutHelper = new SlideoutHelper(this, true);
 	    mSlideoutHelper.activate();
 	    getSupportFragmentManager().beginTransaction().add(R.id.slideout_placeholder, new MenuFragment(), "menu").commit();
 	    mSlideoutHelper.open();
