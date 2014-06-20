@@ -7,6 +7,8 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -64,9 +66,14 @@ public class ConfirmationDialog extends DialogFragment {
 	    initializeViews(view);
 		
 	    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-	    builder.setView(view);
-	    return builder.create();
+	    builder.setInverseBackgroundForced(true);
+	    AlertDialog dialog = builder.create();
+	    dialog.setView(view, 0, 0, 0, 0);
+	    
+//	    Dialog dialog2 = new Dialog(getActivity(), R.style.CustomDialog);
+//	    dialog2.setContentView(view);
+	    
+	    return dialog;
 	}
-	
 
 }

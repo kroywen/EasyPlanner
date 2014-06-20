@@ -102,7 +102,6 @@ public class MainScreen extends FragmentActivity implements OnClickListener, OnP
 		case R.id.classesBtn:
 			if (pager.getCurrentItem() != 0) {
 				pager.setCurrentItem(0, true);
-				
 			}
 			break;
 		case R.id.tasksBtn:

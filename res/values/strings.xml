@@ -29,6 +29,9 @@
     <string name="unlink_google">Unlink Google</string>
     <string name="link_evernote">Link Evernote</string>
     <string name="unlink_evernote">Unlink Evernote</string>
+    <string name="day">Day</string>
+    <string name="week">Week</string>
+    <string name="month">Month</string>
     
     <string-array name="menu_items">
         <item>@string/contact_us</item>

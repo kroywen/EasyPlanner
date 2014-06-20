@@ -44,6 +44,27 @@ public class DatabaseStorage {
 		return classes;
 	}
 	
+	public Clas getClassById(long id) {
+		Clas clas = null;
+		try {
+			String selection = DatabaseHelper.FIELD_ID + "=" + id;
+			Cursor c = db.query(DatabaseHelper.TABLE_CLASSES, null, selection, null, null, null, null);
+			if (c != null && c.moveToFirst()) {
+				clas = new Clas(
+					c.getLong(c.getColumnIndex(DatabaseHelper.FIELD_ID)),
+					c.getString(c.getColumnIndex(DatabaseHelper.FIELD_NAME)),
+					c.getLong(c.getColumnIndex(DatabaseHelper.FIELD_TIME))
+				);
+			}
+			if (c != null && !c.isClosed()) {
+				c.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return clas;
+	}
+	
 	public void addClass(Clas clas) {
 		if (clas == null) {
 			return;

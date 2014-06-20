@@ -1,61 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/inner_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="vertical" 
     android:background="@android:color/white">
-    
+
     <include layout="@layout/titlebar" />
     
-    <LinearLayout 
+    <!-- 
+    <com.thepegeekapps.easyplanner.ui.view.DateView
+        android:id="@+id/dateView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content" />
         
-        <LinearLayout 
-            android:id="@+id/classesBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/white"
-            android:gravity="center"
-            android:padding="15dp">
-            
-            <TextView
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:textColor="#0c3b6f"
-	            android:drawableLeft="@drawable/icon_classes"
-	            android:drawablePadding="5dp"
-	            android:textSize="18sp"
-	            android:text="@string/classes" />
-            
-        </LinearLayout>
-        
-        <LinearLayout 
-            android:id="@+id/tasksBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="#f4f9fd"
-            android:gravity="center"
-            android:padding="15dp">
-            
-            <TextView
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:textColor="#0c3b6f"
-	            android:drawableLeft="@drawable/icon_tasks"
-	            android:drawablePadding="5dp"
-	            android:textSize="18sp"
-	            android:text="@string/tasks" />
-            
-        </LinearLayout>
-        
-    </LinearLayout>
-    
-    <FrameLayout 
+     -->
+     
+     <com.thepegeekapps.easyplanner.ui.view.DateView
+        android:id="@+id/dateView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+     
+     <FrameLayout 
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
@@ -67,7 +32,7 @@
         
     </FrameLayout>
     
-    <FrameLayout 
+     <FrameLayout 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="1dp"
@@ -88,10 +53,10 @@
 	     	    android:background="@drawable/radoigroup_background">
 	     	    
 	     	    <RadioButton 
-	     	        android:id="@+id/todayBtn"
+	     	        android:id="@+id/dayBtn"
 	     	        android:layout_width="100dp"
 	     	        android:layout_height="wrap_content"
-	     	        android:text="@string/today"
+	     	        android:text="@string/day"
 	     	        android:gravity="center"
 	     	        android:padding="7dp"
 	     	        android:background="@drawable/cb_left_background"
@@ -99,10 +64,21 @@
 	     	        android:button="@null" />
 	     	    
 	     	    <RadioButton 
-	     	        android:id="@+id/allBtn"
+	     	        android:id="@+id/weekBtn"
 	     	        android:layout_width="100dp"
 	     	        android:layout_height="wrap_content"
-	     	        android:text="@string/all"
+	     	        android:text="@string/week"
+	     	        android:gravity="center"
+	     	        android:padding="7dp"
+	     	        android:background="@drawable/cb_middle_background"
+	     	        android:textColor="@color/cb_text_color"
+	     	        android:button="@null" />
+	     	    
+	     	    <RadioButton 
+	     	        android:id="@+id/monthBtn"
+	     	        android:layout_width="100dp"
+	     	        android:layout_height="wrap_content"
+	     	        android:text="@string/month"
 	     	        android:gravity="center"
 	     	        android:padding="7dp"
 	     	        android:background="@drawable/cb_right_background"

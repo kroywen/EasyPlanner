@@ -40,7 +40,8 @@
             android:orientation="horizontal"
             android:paddingLeft="7dp"
             android:paddingRight="7dp"
-            android:background="#ebf0f5">
+            android:background="#ebf0f5"
+            android:gravity="center_vertical">
             
             <ImageView
                 android:layout_width="wrap_content"

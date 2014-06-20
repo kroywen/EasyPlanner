@@ -33,6 +33,10 @@
         <activity 
             android:name=".screen.MenuScreen"
             android:screenOrientation="portrait" />
+        
+        <activity
+            android:name=".screen.ClassScreen"
+            android:screenOrientation="portrait" />
 
     </application>
 
