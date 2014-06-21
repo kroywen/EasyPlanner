@@ -6,19 +6,6 @@
     android:background="@android:color/white">
 
     <include layout="@layout/titlebar" />
-    
-    <!-- 
-    <com.thepegeekapps.easyplanner.ui.view.DateView
-        android:id="@+id/dateView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-        
-     -->
-     
-     <com.thepegeekapps.easyplanner.ui.view.DateView
-        android:id="@+id/dateView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
      
      <FrameLayout 
         android:layout_width="match_parent"
@@ -46,6 +33,7 @@
 	        android:gravity="center_horizontal">
 	        
 	     	<RadioGroup
+	     	    android:id="@+id/viewSelectorGroup"
 	     	    android:layout_width="wrap_content"
 	     	    android:layout_height="wrap_content"
 	     	    android:orientation="horizontal"
@@ -61,12 +49,14 @@
 	     	        android:padding="7dp"
 	     	        android:background="@drawable/cb_left_background"
 	     	        android:textColor="@color/cb_text_color"
-	     	        android:button="@null" />
+	     	        android:button="@null"
+	     	        android:checked="true" />
 	     	    
 	     	    <RadioButton 
 	     	        android:id="@+id/weekBtn"
 	     	        android:layout_width="100dp"
 	     	        android:layout_height="wrap_content"
+	     	        android:layout_marginLeft="-1dp"
 	     	        android:text="@string/week"
 	     	        android:gravity="center"
 	     	        android:padding="7dp"
@@ -78,6 +68,7 @@
 	     	        android:id="@+id/monthBtn"
 	     	        android:layout_width="100dp"
 	     	        android:layout_height="wrap_content"
+	     	        android:layout_marginLeft="-1dp"
 	     	        android:text="@string/month"
 	     	        android:gravity="center"
 	     	        android:padding="7dp"

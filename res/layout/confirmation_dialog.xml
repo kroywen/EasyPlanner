@@ -51,20 +51,16 @@
                 android:id="@+id/cancelBtn"
                 android:layout_width="100dp"
                 android:layout_height="35dp"
-                android:textColor="@color/btn_blue_text_color"
-                android:background="@drawable/btn_left_blue_background" />
-            
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@android:color/white" />
+                android:textColor="@color/btn_text_color"
+                android:background="@drawable/btn_left_background" />
             
             <Button
                 android:id="@+id/okBtn"
                 android:layout_width="100dp"
                 android:layout_height="35dp"
-                android:textColor="@color/btn_blue_text_color"
-                android:background="@drawable/btn_right_blue_background" />
+                android:layout_marginLeft="-1dp"
+                android:textColor="@color/btn_text_color"
+                android:background="@drawable/btn_right_background" />
             
         </LinearLayout>
         

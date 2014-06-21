@@ -64,7 +64,6 @@ public class ClassesFragment extends Fragment implements OnItemClickListener {
 	
 	public void deleteClass(final Clas clas) {
 		final ConfirmationDialog dialog = new ConfirmationDialog();
-		dialog.setRetainInstance(true);
 		dialog.setTitle(getString(R.string.information));
 		dialog.setText(getString(R.string.delete_class_confirmation));
 		dialog.setOkListener(getString(R.string.delete), new View.OnClickListener() {

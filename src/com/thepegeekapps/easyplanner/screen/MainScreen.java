@@ -1,7 +1,5 @@
 package com.thepegeekapps.easyplanner.screen;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,20 +11,20 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.TextUtils;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.thepegeekapps.easyplanner.R;
+import com.thepegeekapps.easyplanner.dialog.AddClassDialog;
+import com.thepegeekapps.easyplanner.dialog.AddClassDialog.OnAddClassListener;
 import com.thepegeekapps.easyplanner.fragment.ClassesFragment;
 import com.thepegeekapps.easyplanner.fragment.TasksFragment;
 import com.thepegeekapps.easyplanner.lib.slideout.SlideoutActivity;
 import com.thepegeekapps.easyplanner.model.Clas;
 import com.thepegeekapps.easyplanner.storage.db.DatabaseStorage;
 
-public class MainScreen extends FragmentActivity implements OnClickListener, OnPageChangeListener {
+public class MainScreen extends FragmentActivity implements OnClickListener, OnPageChangeListener, OnAddClassListener {
 	
 	private ViewPager pager;
 	private PagerAdapter pagerAdapter;	
@@ -73,27 +71,9 @@ public class MainScreen extends FragmentActivity implements OnClickListener, OnP
 	}
 	
 	private void updateViews() {
-		pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+		pagerAdapter = new MainFragmentPagerAdapter(getSupportFragmentManager());
 		pager.setAdapter(pagerAdapter);
 		pager.setOnPageChangeListener(this);
-	}
-	
-	private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
-		
-		public MyFragmentPagerAdapter(FragmentManager fm) {
-			super(fm);
-		}
-		
-		@Override
-		public Fragment getItem(int position) {
-			return (position == 0) ? new ClassesFragment() : new TasksFragment();
-		}
-		
-		@Override
-		public int getCount() {
-			return 2;
-		}
-		
 	}
 
 	@Override
@@ -127,34 +107,37 @@ public class MainScreen extends FragmentActivity implements OnClickListener, OnP
 	}
 	
 	private void showAddClassDialog() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-		View view = inflater.inflate(R.layout.add_class_dialog, null);
-		final EditText className = (EditText) view.findViewById(R.id.className);
-		builder.setTitle(R.string.add_class)
-			.setView(view)
-			.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {	
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					if (TextUtils.isEmpty(className.getText().toString())) {
-						Toast.makeText(MainScreen.this, R.string.class_name_empty, Toast.LENGTH_SHORT).show();
-					} else {
-						String classname = className.getText().toString().trim(); 
-						Clas clas = new Clas(0, classname, System.currentTimeMillis());
-						dbStorage.addClass(clas);
-						updateViews();
-						dialog.dismiss();
-					}
-				}
-			})
-			.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.dismiss();
-				}
-			})
-			.create()
-			.show();
+		AddClassDialog dialog = new AddClassDialog();
+		dialog.show(getSupportFragmentManager(), "add_class");
+	}
+
+	@Override
+	public void onAddClass(String className) {
+		if (TextUtils.isEmpty(className)) {
+			Toast.makeText(MainScreen.this, R.string.enter_class_name, Toast.LENGTH_SHORT).show();
+		} else {
+			Clas clas = new Clas(0, className, System.currentTimeMillis());
+			dbStorage.addClass(clas);
+			updateViews();
+		}
+	}
+	
+	private class MainFragmentPagerAdapter extends FragmentPagerAdapter {
+		
+		public MainFragmentPagerAdapter(FragmentManager fm) {
+			super(fm);
+		}
+		
+		@Override
+		public Fragment getItem(int position) {
+			return (position == 0) ? new ClassesFragment() : new TasksFragment();
+		}
+		
+		@Override
+		public int getCount() {
+			return 2;
+		}
+		
 	}
 
 }

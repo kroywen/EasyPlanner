@@ -12,21 +12,19 @@
         android:orientation="vertical">
         
         <ImageView
-            android:id="@+id/dayOfMonthNext"
+            android:id="@+id/dayOfWeekNext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#ff0000"
             android:paddingTop="10dp"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:src="@drawable/arrow_up" />
         
         <ImageView
-            android:id="@+id/dayOfMonthPrev"
+            android:id="@+id/dayOfWeekPrev"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:background="#00ff00"
             android:paddingBottom="10dp"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
@@ -35,13 +33,12 @@
     </LinearLayout>
     
     <TextView
-        android:id="@+id/dayOfMonthView"
+        android:id="@+id/dayOfWeekView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:textSize="20sp"
-        android:textColor="#448edb"
-        android:text="Mon" />
+        android:textSize="19sp"
+        android:textColor="#448edb" />
     
     <LinearLayout 
         android:layout_width="wrap_content"
@@ -53,6 +50,9 @@
             android:id="@+id/dayNext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:src="@drawable/arrow_up" />
         
         <ImageView
@@ -60,6 +60,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:src="@drawable/arrow_down" />
         
     </LinearLayout>
@@ -69,9 +72,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:textSize="20sp"
-        android:textColor="#448edb"
-        android:text="02" />
+        android:textSize="19sp"
+        android:textColor="#448edb" />
     
     <LinearLayout 
         android:layout_width="wrap_content"
@@ -83,6 +85,9 @@
             android:id="@+id/monthNext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:src="@drawable/arrow_up" />
         
         <ImageView
@@ -90,6 +95,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:src="@drawable/arrow_down" />
         
     </LinearLayout>
@@ -99,9 +107,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:textSize="20sp"
-        android:textColor="#448edb"
-        android:text="Dec" />
+        android:textSize="19sp"
+        android:textColor="#448edb" />
     
     <LinearLayout 
         android:layout_width="wrap_content"
@@ -113,6 +120,9 @@
             android:id="@+id/yearNext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:src="@drawable/arrow_up" />
         
         <ImageView
@@ -120,6 +130,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:src="@drawable/arrow_down" />
         
     </LinearLayout>
@@ -129,8 +142,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:textSize="20sp"
-        android:textColor="#448edb"
-        android:text="2013" />
+        android:textSize="19sp"
+        android:textColor="#448edb" />
 
 </LinearLayout>

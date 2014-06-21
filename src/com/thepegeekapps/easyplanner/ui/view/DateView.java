@@ -14,10 +14,14 @@ import android.widget.TextView;
 import com.thepegeekapps.easyplanner.R;
 
 public class DateView extends RelativeLayout implements OnClickListener {
+	
+	public interface OnDateChangedListener {
+		void onDateChanged(long time);
+	}
 
-	private ImageView dayOfMonthNext;
-	private ImageView dayOfMonthPrev;
-	private TextView dayOfMonthView;
+	private ImageView dayOfWeekNext;
+	private ImageView dayOfWeekPrev;
+	private TextView dayOfWeekView;
 	
 	private ImageView dayNext;
 	private ImageView dayPrev;
@@ -32,6 +36,10 @@ public class DateView extends RelativeLayout implements OnClickListener {
 	private TextView yearView;
 	
 	private Calendar calendar;
+	private String[] daysOfWeek;
+	private String[] months;
+	
+	private OnDateChangedListener listener;
 	
 	public DateView(Context context) {
 		this(context, null);
@@ -43,6 +51,9 @@ public class DateView extends RelativeLayout implements OnClickListener {
 	}
 	
 	private void init() {
+		daysOfWeek = getContext().getResources().getStringArray(R.array.days_of_week);
+		months = getContext().getResources().getStringArray(R.array.months);
+		
 		LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View view = inflater.inflate(R.layout.date_view, null);
 		initializeViews(view);
@@ -52,15 +63,14 @@ public class DateView extends RelativeLayout implements OnClickListener {
 		addView(view, params);
 		
 		calendar = Calendar.getInstance();
-		setDate(calendar.getTimeInMillis());
 	}
 	
 	private void initializeViews(View view) {
-		dayOfMonthNext = (ImageView) view.findViewById(R.id.dayOfMonthNext);
-		dayOfMonthNext.setOnClickListener(this);
-		dayOfMonthPrev = (ImageView) view.findViewById(R.id.dayOfMonthPrev);
-		dayOfMonthPrev.setOnClickListener(this);
-		dayOfMonthView = (TextView) view.findViewById(R.id.dayOfMonthView);
+		dayOfWeekNext = (ImageView) view.findViewById(R.id.dayOfWeekNext);
+		dayOfWeekNext.setOnClickListener(this);
+		dayOfWeekPrev = (ImageView) view.findViewById(R.id.dayOfWeekPrev);
+		dayOfWeekPrev.setOnClickListener(this);
+		dayOfWeekView = (TextView) view.findViewById(R.id.dayOfWeekView);
 		
 		dayNext = (ImageView) view.findViewById(R.id.dayNext);
 		dayNext.setOnClickListener(this);
@@ -83,29 +93,49 @@ public class DateView extends RelativeLayout implements OnClickListener {
 	
 	public void setDate(long time) {
 		calendar.setTimeInMillis(time);
+		dayOfWeekView.setText(daysOfWeek[calendar.get(Calendar.DAY_OF_WEEK)]);
+		dayView.setText(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
+		monthView.setText(months[calendar.get(Calendar.MONTH)]);
+		yearView.setText(String.valueOf(calendar.get(Calendar.YEAR)));
 		
+		if (listener != null) {
+			listener.onDateChanged(time);
+		}
 	}
 
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.dayOfMonthNext:
+		case R.id.dayOfWeekNext:
+			calendar.add(Calendar.DAY_OF_WEEK, 1);
 			break;
-		case R.id.dayOfMonthPrev:
+		case R.id.dayOfWeekPrev:
+			calendar.add(Calendar.DAY_OF_WEEK, -1);
 			break;
 		case R.id.dayNext:
+			calendar.add(Calendar.DAY_OF_MONTH, 1);
 			break;
 		case R.id.dayPrev:
+			calendar.add(Calendar.DAY_OF_MONTH, -1);
 			break;
 		case R.id.monthNext:
+			calendar.add(Calendar.MONTH, 1);
 			break;
 		case R.id.monthPrev:
+			calendar.add(Calendar.MONTH, -1);
 			break;
 		case R.id.yearNext:
+			calendar.add(Calendar.YEAR, 1);
 			break;
 		case R.id.yearPrev:
+			calendar.add(Calendar.YEAR, -1);
 			break;
 		}
+		setDate(calendar.getTimeInMillis());
+	}
+	
+	public void setOnDateChangedListener(OnDateChangedListener listener) {
+		this.listener = listener;
 	}
 
 }

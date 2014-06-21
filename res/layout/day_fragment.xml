@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <com.thepegeekapps.easyplanner.ui.view.DateView
+        android:id="@+id/dateView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    
+    
+    <ScrollView 
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        
+        <!-- Activities -->
+        <LinearLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical">
+	        
+	        <RelativeLayout 
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content">
+	            
+	            <RelativeLayout 
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:layout_alignParentTop="true"
+	                android:background="#f6f9fd">
+	            
+		            <TextView
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:layout_centerInParent="true"
+		                android:layout_centerVertical="true"
+		                android:drawableLeft="@drawable/activities_icon"
+		                android:drawablePadding="5dp"
+		                android:textColor="#448edb"
+		                android:textSize="18sp"
+		                android:text="@string/activities" />
+		            
+		            <ImageView
+		                android:id="@+id/addActivityBtn"
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:layout_alignParentRight="true"
+		                android:layout_centerVertical="true"
+		                android:padding="10dp"
+		                android:src="@drawable/icon_add_light" />
+		            
+		        </RelativeLayout>
+		        
+	            <TextView
+	                android:id="@+id/currentDateView"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_alignParentLeft="true"
+	                android:layout_marginLeft="10dp"
+	                android:background="@drawable/today_marker"
+	                android:textColor="@android:color/white"
+	                android:textSize="24sp"
+	                android:gravity="top|center_horizontal"
+	                android:padding="5dp" />
+	            
+	            <TextView
+	                android:id="@+id/currentDayView"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginTop="5dp"
+	                android:layout_marginLeft="5dp"
+	                android:layout_toRightOf="@+id/currentDateView"
+	                android:textColor="#dcdfe3"
+	                android:textSize="20sp" />
+	            
+	        </RelativeLayout>
+	        
+	        <RelativeLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content">
+	            
+	            <LinearLayout 
+	                android:id="@+id/activitiesContent"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:orientation="vertical"
+	                android:paddingLeft="10dp"
+	                android:paddingRight="5dp"
+	                android:paddingTop="5dp"
+	                android:paddingBottom="5dp"
+	                android:visibility="invisible" />
+	            
+	            <TextView 
+	                android:id="@+id/activitiesEmptyView"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_centerInParent="true"
+	                android:padding="10dp"
+	                android:textColor="#b0b0b0"
+	                android:textSize="16sp"
+	                android:text="@string/no_activities" />
+	            
+	        </RelativeLayout>
+	        
+	    </LinearLayout>
+        
+	    <!-- Media Resources -->
+	    <LinearLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical">
+	        
+	        <RelativeLayout 
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:background="#f6f9fd">
+	            
+	            <TextView
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_alignParentLeft="true"
+	                android:layout_centerVertical="true"
+	                android:paddingLeft="10dp"
+	                android:drawableLeft="@drawable/media_icon"
+	                android:drawablePadding="5dp"
+	                android:textColor="#448edb"
+	                android:textSize="18sp"
+	                android:text="@string/media_resources" />
+	            
+	            <ImageView
+	                android:id="@+id/addMediaBtn"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_alignParentRight="true"
+	                android:layout_centerVertical="true"
+	                android:padding="10dp"
+	                android:src="@drawable/icon_add_light" />
+	            
+	        </RelativeLayout>
+	        
+	        <RelativeLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content">
+	            
+	            <LinearLayout 
+	                android:id="@+id/mediaContent"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:orientation="vertical"
+	                android:paddingLeft="10dp"
+	                android:paddingRight="5dp"
+	                android:paddingTop="5dp"
+	                android:paddingBottom="5dp"
+	                android:visibility="invisible" />
+	            
+	            <TextView 
+	                android:id="@+id/mediaEmptyView"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_centerInParent="true"
+	                android:padding="10dp"
+	                android:textColor="#b0b0b0"
+	                android:textSize="16sp"
+	                android:text="@string/no_resources" />
+	            
+	        </RelativeLayout>
+	        
+	    </LinearLayout>
+	    
+	    <!-- Planned Homework -->
+	    <LinearLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical">
+	        
+	        <RelativeLayout 
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:background="#f6f9fd">
+	            
+	            <TextView
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_alignParentLeft="true"
+	                android:layout_centerVertical="true"
+	                android:paddingLeft="10dp"
+	                android:drawableLeft="@drawable/homework_icon"
+	                android:drawablePadding="5dp"
+	                android:textColor="#448edb"
+	                android:textSize="18sp"
+	                android:text="@string/planned_homework" />
+	            
+	            <ImageView
+	                android:id="@+id/addHomeworkBtn"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_alignParentRight="true"
+	                android:layout_centerVertical="true"
+	                android:padding="10dp"
+	                android:src="@drawable/icon_add_light" />
+	            
+	        </RelativeLayout>
+	        
+	        <RelativeLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content">
+	            
+	            <LinearLayout 
+	                android:id="@+id/homeworksContent"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:orientation="vertical"
+	                android:paddingLeft="10dp"
+	                android:paddingRight="5dp"
+	                android:paddingTop="5dp"
+	                android:paddingBottom="5dp"
+	                android:visibility="invisible" />
+	            
+	            <TextView 
+	                android:id="@+id/homeworksEmptyView"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_centerInParent="true"
+	                android:padding="10dp"
+	                android:textColor="#b0b0b0"
+	                android:textSize="16sp"
+	                android:text="@string/no_homework" />
+	            
+	        </RelativeLayout>
+	        
+	    </LinearLayout>
+	    
+	    <!-- Preparation Tasks -->
+	    <LinearLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical">
+	        
+	        <RelativeLayout 
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:background="#f6f9fd">
+	            
+	            <TextView
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_alignParentLeft="true"
+	                android:layout_centerVertical="true"
+	                android:paddingLeft="10dp"
+	                android:drawableLeft="@drawable/tasks_icon"
+	                android:drawablePadding="5dp"
+	                android:textColor="#448edb"
+	                android:textSize="18sp"
+	                android:text="@string/preparation_tasks" />
+	            
+	            <ImageView
+	                android:id="@+id/addTaskBtn"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_alignParentRight="true"
+	                android:layout_centerVertical="true"
+	                android:padding="10dp"
+	                android:src="@drawable/icon_add_light" />
+	            
+	        </RelativeLayout>
+	        
+	        <RelativeLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content">
+	            
+	            <LinearLayout 
+	                android:id="@+id/tasksContent"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:orientation="vertical"
+	                android:paddingLeft="10dp"
+	                android:paddingRight="5dp"
+	                android:paddingTop="5dp"
+	                android:paddingBottom="5dp"
+	                android:visibility="invisible" />
+	            
+	            <TextView 
+	                android:id="@+id/tasksEmptyView"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_centerInParent="true"
+	                android:padding="10dp"
+	                android:textColor="#b0b0b0"
+	                android:textSize="16sp"
+	                android:text="@string/no_tasks" />
+	            
+	        </RelativeLayout>
+	        
+	    </LinearLayout>
+    
+    </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

@@ -76,7 +76,7 @@
         <LinearLayout 
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
-	        android:background="#458edb"
+	        android:background="#448edb"
 	        android:padding="10dp"
 	        android:gravity="center_horizontal">
 	        
@@ -102,12 +102,14 @@
 	     	        android:id="@+id/allBtn"
 	     	        android:layout_width="100dp"
 	     	        android:layout_height="wrap_content"
+	     	        android:layout_marginLeft="-1dp"
 	     	        android:text="@string/all"
 	     	        android:gravity="center"
 	     	        android:padding="7dp"
 	     	        android:background="@drawable/cb_right_background"
 	     	        android:textColor="@color/cb_text_color"
-	     	        android:button="@null" />
+	     	        android:button="@null"
+	     	        android:checked="true" />
 	     	    
 	     	</RadioGroup>
 	        
