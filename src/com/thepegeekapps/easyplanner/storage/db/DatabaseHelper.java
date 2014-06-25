@@ -16,9 +16,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	
 	public static final String FIELD_ID = "id";
 	public static final String FIELD_CLASS_ID = "class_id";
+	public static final String FIELD_PARENT_ID = "parentId";
 	public static final String FIELD_NAME = "name";
 	public static final String FIELD_DESCRIPTION = "description";
 	public static final String FIELD_TIME = "time";
+	public static final String FIELD_COMPLETED = "completed";
 	
 	public static final String CREATE_TABLE_CLASSES =
 		"create table if not exists " + TABLE_CLASSES + " (" +
@@ -53,8 +55,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		"create table if not exists " + TABLE_TASKS + " (" +
 		FIELD_ID + " integer primary key autoincrement, " +
 		FIELD_CLASS_ID + " integer, " +
+		FIELD_PARENT_ID + " integer, " +
 		FIELD_DESCRIPTION + " text, " +
-		FIELD_TIME + " integer);";
+		FIELD_TIME + " integer, " +
+		FIELD_COMPLETED + " integer);";
 	
 	public static final String DROP_TABLE_TASKS =
 		"drop table if exists " + TABLE_TASKS;

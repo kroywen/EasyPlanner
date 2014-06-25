@@ -19,6 +19,6 @@
         android:cacheColorHint="@android:color/transparent"
         android:dividerHeight="1px"
         android:listSelector="@drawable/list_item_selector"
-        android:divider="#cccccc" />
+        android:divider="#f4f9fd" />
 
 </RelativeLayout>

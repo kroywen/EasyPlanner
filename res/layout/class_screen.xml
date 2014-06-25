@@ -47,7 +47,7 @@
 	     	        android:text="@string/day"
 	     	        android:gravity="center"
 	     	        android:padding="7dp"
-	     	        android:background="@drawable/cb_left_background"
+	     	        android:background="@drawable/rb_left_background"
 	     	        android:textColor="@color/cb_text_color"
 	     	        android:button="@null"
 	     	        android:checked="true" />
@@ -60,7 +60,7 @@
 	     	        android:text="@string/week"
 	     	        android:gravity="center"
 	     	        android:padding="7dp"
-	     	        android:background="@drawable/cb_middle_background"
+	     	        android:background="@drawable/rb_middle_background"
 	     	        android:textColor="@color/cb_text_color"
 	     	        android:button="@null" />
 	     	    
@@ -72,7 +72,7 @@
 	     	        android:text="@string/month"
 	     	        android:gravity="center"
 	     	        android:padding="7dp"
-	     	        android:background="@drawable/cb_right_background"
+	     	        android:background="@drawable/rb_right_background"
 	     	        android:textColor="@color/cb_text_color"
 	     	        android:button="@null" />
 	     	    

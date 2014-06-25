@@ -1,5 +1,6 @@
 package com.thepegeekapps.easyplanner.fragment;
 
+import java.util.Calendar;
 import java.util.List;
 
 import android.content.Intent;
@@ -9,16 +10,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 
 import com.thepegeekapps.easyplanner.R;
 import com.thepegeekapps.easyplanner.adapter.ClassAdapter;
 import com.thepegeekapps.easyplanner.dialog.ConfirmationDialog;
 import com.thepegeekapps.easyplanner.model.Clas;
 import com.thepegeekapps.easyplanner.screen.ClassScreen;
+import com.thepegeekapps.easyplanner.screen.MainScreen;
 import com.thepegeekapps.easyplanner.storage.db.DatabaseHelper;
 import com.thepegeekapps.easyplanner.storage.db.DatabaseStorage;
+import com.thepegeekapps.easyplanner.util.Utilities;
 
 public class ClassesFragment extends Fragment implements OnItemClickListener {
 	
@@ -28,11 +31,21 @@ public class ClassesFragment extends Fragment implements OnItemClickListener {
 	private List<Clas> classes;
 	private DatabaseStorage dbStorage;
 	private ClassAdapter adapter;
+	private int timeSelected;
+	
+	public static ClassesFragment newInstance(int timeSelected) {
+		ClassesFragment f = new ClassesFragment();
+		Bundle args = new Bundle();
+		args.putInt("time", timeSelected);
+		f.setArguments(args);
+		return f;
+	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		dbStorage = new DatabaseStorage(getActivity());
+		timeSelected = (getArguments() != null) ? getArguments().getInt("time") : 0;
 	}
 	
 	@Override
@@ -50,8 +63,17 @@ public class ClassesFragment extends Fragment implements OnItemClickListener {
 	}
 	
 	public void updateViews() {
-		classes = dbStorage.getClasses();
-		if (classes == null || classes.isEmpty()) {
+		String selection = null;
+		if (timeSelected == MainScreen.TIME_TODAY) {
+			Calendar calendar = Calendar.getInstance(); 
+			long dayStart = Utilities.getDayStart(calendar.getTimeInMillis());
+			long dayEnd = Utilities.getDayEnd(calendar.getTimeInMillis());
+			selection = DatabaseHelper.FIELD_TIME + " > " + dayStart + " AND " +
+				DatabaseHelper.FIELD_TIME + " < " + dayEnd;
+		}
+		classes = dbStorage.getClasses(selection);
+		
+		if (Utilities.isEmpty(classes)) {
 			emptyView.setVisibility(View.VISIBLE);
 			classesList.setVisibility(View.INVISIBLE);
 		} else {
@@ -90,6 +112,11 @@ public class ClassesFragment extends Fragment implements OnItemClickListener {
 		Intent intent = new Intent(getActivity(), ClassScreen.class);
 		intent.putExtra(DatabaseHelper.FIELD_ID, classId);
 		startActivity(intent);
+	}
+	
+	public void setTimeSelected(int timeSelected) {
+		this.timeSelected = timeSelected;
+		updateViews();
 	}
 
 }

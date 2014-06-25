@@ -81,6 +81,7 @@
 	        android:gravity="center_horizontal">
 	        
 	     	<RadioGroup
+	     	    android:id="@+id/timeSelectorGroup"
 	     	    android:layout_width="wrap_content"
 	     	    android:layout_height="wrap_content"
 	     	    android:orientation="horizontal"
@@ -94,7 +95,7 @@
 	     	        android:text="@string/today"
 	     	        android:gravity="center"
 	     	        android:padding="7dp"
-	     	        android:background="@drawable/cb_left_background"
+	     	        android:background="@drawable/rb_left_background"
 	     	        android:textColor="@color/cb_text_color"
 	     	        android:button="@null" />
 	     	    
@@ -106,7 +107,7 @@
 	     	        android:text="@string/all"
 	     	        android:gravity="center"
 	     	        android:padding="7dp"
-	     	        android:background="@drawable/cb_right_background"
+	     	        android:background="@drawable/rb_right_background"
 	     	        android:textColor="@color/cb_text_color"
 	     	        android:button="@null"
 	     	        android:checked="true" />

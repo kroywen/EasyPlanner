@@ -6,32 +6,43 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Toast;
 
 import com.thepegeekapps.easyplanner.R;
-import com.thepegeekapps.easyplanner.dialog.AddClassDialog;
-import com.thepegeekapps.easyplanner.dialog.AddClassDialog.OnAddClassListener;
+import com.thepegeekapps.easyplanner.dialog.InputDialog;
+import com.thepegeekapps.easyplanner.dialog.InputDialog.OnInputClickListener;
 import com.thepegeekapps.easyplanner.fragment.ClassesFragment;
 import com.thepegeekapps.easyplanner.fragment.TasksFragment;
 import com.thepegeekapps.easyplanner.lib.slideout.SlideoutActivity;
 import com.thepegeekapps.easyplanner.model.Clas;
 import com.thepegeekapps.easyplanner.storage.db.DatabaseStorage;
 
-public class MainScreen extends FragmentActivity implements OnClickListener, OnPageChangeListener, OnAddClassListener {
+public class MainScreen extends FragmentActivity implements OnClickListener, OnPageChangeListener, OnCheckedChangeListener {
+	
+	public static final int TIME_ALL = 0;
+	public static final int TIME_TODAY = 1;
+	
+	public static final int TAB_CLASSES = 0;
+	public static final int TAB_TASKS = 1;
 	
 	private ViewPager pager;
-	private PagerAdapter pagerAdapter;	
+	private MainFragmentPagerAdapter pagerAdapter;	
 	private View classesBtn;
 	private View tasksBtn;
 	private View addClassBtn;
+	private RadioGroup timeSelectorGroup;
 	private DatabaseStorage dbStorage;
+	
+	private int tabSelected;
+	private int timeSelected;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +64,9 @@ public class MainScreen extends FragmentActivity implements OnClickListener, OnP
 		
 		addClassBtn = findViewById(R.id.addClassBtn);
 		addClassBtn.setOnClickListener(this);
+		
+		timeSelectorGroup = (RadioGroup) findViewById(R.id.timeSelectorGroup);
+		timeSelectorGroup.setOnCheckedChangeListener(this);
 	}
 	
 	@Override
@@ -74,6 +88,7 @@ public class MainScreen extends FragmentActivity implements OnClickListener, OnP
 		pagerAdapter = new MainFragmentPagerAdapter(getSupportFragmentManager());
 		pager.setAdapter(pagerAdapter);
 		pager.setOnPageChangeListener(this);
+		pager.setCurrentItem(tabSelected);
 	}
 
 	@Override
@@ -104,25 +119,43 @@ public class MainScreen extends FragmentActivity implements OnClickListener, OnP
 	@Override
 	public void onPageSelected(int position) {
 		addClassBtn.setVisibility(position == 0 ? View.VISIBLE : View.INVISIBLE);
+		tabSelected = position;
 	}
 	
 	private void showAddClassDialog() {
-		AddClassDialog dialog = new AddClassDialog();
+		InputDialog dialog = new InputDialog();
+		dialog.setTitle(getString(R.string.information));
+		dialog.setText(getString(R.string.enter_class_name));
+		dialog.setHint(getString(R.string.class_name));
+		dialog.setButtons(getString(R.string.add), getString(R.string.cancel), new OnInputClickListener() {
+			@Override
+			public void onInputOkClick(String inputText) {
+				if (TextUtils.isEmpty(inputText)) {
+					Toast.makeText(MainScreen.this, R.string.enter_class_name, Toast.LENGTH_SHORT).show();
+				} else {
+					Clas clas = new Clas(0, inputText, System.currentTimeMillis());
+					dbStorage.addClass(clas);
+					updateViews();
+				}
+			}
+			@Override
+			public void onInputCancelClick() {}
+		});
 		dialog.show(getSupportFragmentManager(), "add_class");
 	}
 
 	@Override
-	public void onAddClass(String className) {
-		if (TextUtils.isEmpty(className)) {
-			Toast.makeText(MainScreen.this, R.string.enter_class_name, Toast.LENGTH_SHORT).show();
-		} else {
-			Clas clas = new Clas(0, className, System.currentTimeMillis());
-			dbStorage.addClass(clas);
-			updateViews();
-		}
+	public void onCheckedChanged(RadioGroup group, int checkedId) {
+		timeSelected = (checkedId == R.id.todayBtn) ? TIME_TODAY : TIME_ALL;
+		
+		ClassesFragment cf = (ClassesFragment) pagerAdapter.findFragmentByPosition(0);
+		cf.setTimeSelected(timeSelected);
+		
+		TasksFragment tf = (TasksFragment) pagerAdapter.findFragmentByPosition(1);
+		tf.setTimeSelected(timeSelected);
 	}
 	
-	private class MainFragmentPagerAdapter extends FragmentPagerAdapter {
+	class MainFragmentPagerAdapter extends FragmentPagerAdapter {
 		
 		public MainFragmentPagerAdapter(FragmentManager fm) {
 			super(fm);
@@ -130,12 +163,16 @@ public class MainScreen extends FragmentActivity implements OnClickListener, OnP
 		
 		@Override
 		public Fragment getItem(int position) {
-			return (position == 0) ? new ClassesFragment() : new TasksFragment();
+			return (position == 0) ? ClassesFragment.newInstance(timeSelected) : TasksFragment.newInstance(timeSelected);
 		}
 		
 		@Override
 		public int getCount() {
 			return 2;
+		}
+		
+		public Fragment findFragmentByPosition(int position) {
+		    return getSupportFragmentManager().findFragmentByTag("android:switcher:" + pager.getId() + ":" + getItemId(position));
 		}
 		
 	}

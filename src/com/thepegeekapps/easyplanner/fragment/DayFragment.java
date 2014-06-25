@@ -6,17 +6,24 @@ import java.util.List;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.thepegeekapps.easyplanner.R;
+import com.thepegeekapps.easyplanner.dialog.ConfirmationDialog;
+import com.thepegeekapps.easyplanner.dialog.InputDialog;
+import com.thepegeekapps.easyplanner.dialog.InputDialog.OnInputClickListener;
 import com.thepegeekapps.easyplanner.model.Activiti;
 import com.thepegeekapps.easyplanner.model.Homework;
+import com.thepegeekapps.easyplanner.model.Task;
 import com.thepegeekapps.easyplanner.storage.db.DatabaseHelper;
 import com.thepegeekapps.easyplanner.storage.db.DatabaseStorage;
 import com.thepegeekapps.easyplanner.ui.view.DateView;
@@ -52,6 +59,7 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 	private String[] daysOfWeek;
 	private List<Activiti> activities;
 	private List<Homework> homeworks;
+	private List<Task> tasks;
 	
 	public static DayFragment newInstance(long classId) {
 		DayFragment f = new DayFragment();
@@ -67,6 +75,7 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 		dbStorage = new DatabaseStorage(getActivity());
 		classId = (getArguments() != null) ? getArguments().getLong(DatabaseHelper.FIELD_ID) : 0;
 		calendar = Calendar.getInstance();
+		
 		daysOfWeek = getResources().getStringArray(R.array.days_of_week);
 	}
 	
@@ -74,8 +83,13 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.day_fragment, null);
 		initializeViews(view);
-		dateView.setDate(calendar.getTimeInMillis());
 		return view;
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		dateView.setDate(calendar.getTimeInMillis());
 	}
 	
 	private void initializeViews(View view) {
@@ -110,6 +124,7 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 		updateCurrentDay();
 		updateActivities();
 		updateHomeworks();
+		updateTasks();
 	}
 	
 	private void updateCurrentDay() {
@@ -148,13 +163,34 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 			removeBtn.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					dbStorage.deleteActivity(activity);
-					updateActivities();
+					showDeleteActivityDialog(activity);
 				}
 			});
 			
 			activitiesContent.addView(view);
 		}
+	}
+	
+	private void showDeleteActivityDialog(final Activiti activity) {
+		final ConfirmationDialog dialog = new ConfirmationDialog();
+		dialog.setTitle(getString(R.string.information));
+		dialog.setText(getString(R.string.delete_activity_confirmation));
+		dialog.setOkListener(getString(R.string.delete), new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dbStorage.deleteActivity(activity);
+				updateActivities();
+				dialog.dismiss();
+			}
+		});
+		dialog.setCancelListener(getString(R.string.cancel), new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+		
+		dialog.show(getChildFragmentManager(), "DeleteActivityDialog");
 	}
 	
 	private void updateHomeworks() {
@@ -188,13 +224,154 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 			removeBtn.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					dbStorage.deleteHomework(homework);
-					updateHomeworks();
+					showDeleteHomeworkDialog(homework);
 				}
 			});
 			
 			homeworksContent.addView(view);
 		}
+	}
+	
+	private void showDeleteHomeworkDialog(final Homework homework) {
+		final ConfirmationDialog dialog = new ConfirmationDialog();
+		dialog.setTitle(getString(R.string.information));
+		dialog.setText(getString(R.string.delete_homework_confirmation));
+		dialog.setOkListener(getString(R.string.delete), new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dbStorage.deleteHomework(homework);
+				updateHomeworks();
+				dialog.dismiss();
+			}
+		});
+		dialog.setCancelListener(getString(R.string.cancel), new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+		
+		dialog.show(getChildFragmentManager(), "DeleteHomeworkDialog");
+	}
+	
+	private void updateTasks() {
+		long dayStart = Utilities.getDayStart(calendar.getTimeInMillis());
+		long dayEnd = Utilities.getDayEnd(calendar.getTimeInMillis());
+		String selection = DatabaseHelper.FIELD_CLASS_ID + "=" + classId + " AND " +
+				DatabaseHelper.FIELD_TIME + " > " + dayStart + " AND " +
+				DatabaseHelper.FIELD_TIME + " < " + dayEnd;
+		tasks = dbStorage.getTasks(selection);
+		if (Utilities.isEmpty(tasks)) {
+			tasksEmptyView.setVisibility(View.VISIBLE);
+			tasksContent.setVisibility(View.GONE);
+		} else {
+			tasksEmptyView.setVisibility(View.GONE);
+			tasksContent.setVisibility(View.VISIBLE);
+			populateTasksContent(tasks);			
+		}
+	}
+	
+	private void populateTasksContent(List<Task> tasks) {
+		tasksContent.removeAllViews();
+		LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		for (int i=0; i<tasks.size(); i++) {
+			final Task task = tasks.get(i);
+			View taskView = inflater.inflate(R.layout.task_list_item, null);
+			
+			final CheckBox completedCb = (CheckBox) taskView.findViewById(R.id.completedCb);
+			completedCb.setText(task.getDescription());
+			if (task.hasSubtasks()) {
+				completedCb.setChecked(task.areSubtasksCompleted());
+				completedCb.setEnabled(false);
+			} else {
+				completedCb.setChecked(task.isCompleted());
+				completedCb.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						task.setCompleted(!task.isCompleted());
+						dbStorage.updateTask(task);
+						updateTasks();
+					}
+				});
+			}
+			
+			ImageView removeBtn = (ImageView) taskView.findViewById(R.id.removeBtn);
+			if (task.isCompleted()) {
+				removeBtn.setImageResource(R.drawable.remove_icon);
+				removeBtn.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						showDeleteTaskDialog(task);
+					}
+				});
+			} else {
+				removeBtn.setImageResource(R.drawable.icon_add_light);
+				removeBtn.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						showAddTaskDialog(task.getId());
+					}
+				});
+			}
+			
+			tasksContent.addView(taskView);
+			
+			if (task.hasSubtasks()) {
+				List<Task> subtasks = task.getSubtasks();
+				for (int j=0; j<subtasks.size(); j++) {
+					final Task subtask = subtasks.get(j);
+					View subtaskView = inflater.inflate(R.layout.subtask_list_item, null);
+					
+					final CheckBox completedSubtaskCb = (CheckBox) subtaskView.findViewById(R.id.completedCb);
+					completedSubtaskCb.setText(subtask.getDescription());
+					completedSubtaskCb.setChecked(subtask.isCompleted());
+					completedSubtaskCb.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							subtask.setCompleted(!subtask.isCompleted());
+							dbStorage.updateTask(subtask);
+							
+							task.setCompleted(task.areSubtasksCompleted());
+							dbStorage.updateTask(task);
+							
+							updateTasks();
+						}
+					});
+					
+					ImageView removeSubtaskBtn = (ImageView) subtaskView.findViewById(R.id.removeBtn);
+					removeSubtaskBtn.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							showDeleteTaskDialog(subtask);
+						}
+					});
+					
+					tasksContent.addView(subtaskView);
+				}
+			}
+		}
+	}
+	
+	private void showDeleteTaskDialog(final Task task) {
+		final ConfirmationDialog dialog = new ConfirmationDialog();
+		dialog.setTitle(getString(R.string.information));
+		dialog.setText(getString(R.string.delete_task_confirmation));
+		dialog.setOkListener(getString(R.string.delete), new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dbStorage.deleteTask(task);
+				updateTasks();
+				dialog.dismiss();
+			}
+		});
+		dialog.setCancelListener(getString(R.string.cancel), new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+		
+		dialog.show(getChildFragmentManager(), "DeleteTaskDialog");
 	}
 
 	@Override
@@ -212,19 +389,76 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 		case R.id.addHomeworkBtn:
 			showAddHomeworkDialog();
 			break;
+		case R.id.addTaskBtn:
+			showAddTaskDialog(0);
+			break;
 		}
 	}
 	
 	private void showAddActivityDialog() {
-		// TODO
-		dbStorage.addActivity(new Activiti(0, classId, "New activity", System.currentTimeMillis()));
-		updateActivities();
+		InputDialog dialog = new InputDialog();
+		dialog.setTitle(getString(R.string.information));
+		dialog.setText(getString(R.string.describe_activity));
+		dialog.setHint(getString(R.string.activity));
+		dialog.setButtons(getString(R.string.add), getString(R.string.cancel), new OnInputClickListener() {
+			@Override
+			public void onInputOkClick(String inputText) {
+				if (TextUtils.isEmpty(inputText)) {
+					Toast.makeText(getActivity(), R.string.describe_activity, Toast.LENGTH_SHORT).show();
+				} else {
+					Activiti activity = new Activiti(0, classId, inputText, dateView.getSelectedTime());
+					dbStorage.addActivity(activity);
+					updateActivities();
+				}
+			}
+			@Override
+			public void onInputCancelClick() {}
+		});
+		dialog.show(getChildFragmentManager(), "add_activity");
 	}
 	
 	private void showAddHomeworkDialog() {
-		// TODO
-		dbStorage.addHomework(new Homework(0, classId, "New homework", System.currentTimeMillis()));
-		updateHomeworks();
+		InputDialog dialog = new InputDialog();
+		dialog.setTitle(getString(R.string.information));
+		dialog.setText(getString(R.string.describe_homework));
+		dialog.setHint(getString(R.string.homework));
+		dialog.setButtons(getString(R.string.add), getString(R.string.cancel), new OnInputClickListener() {
+			@Override
+			public void onInputOkClick(String inputText) {
+				if (TextUtils.isEmpty(inputText)) {
+					Toast.makeText(getActivity(), R.string.describe_homework, Toast.LENGTH_SHORT).show();
+				} else {
+					Homework homework = new Homework(0, classId, inputText, dateView.getSelectedTime());
+					dbStorage.addHomework(homework);
+					updateHomeworks();
+				}
+			}
+			@Override
+			public void onInputCancelClick() {}
+		});
+		dialog.show(getChildFragmentManager(), "add_homework");
+	}
+	
+	private void showAddTaskDialog(final long parentId) {
+		InputDialog dialog = new InputDialog();
+		dialog.setTitle(getString(R.string.information));
+		dialog.setText(getString(R.string.describe_task));
+		dialog.setHint(getString(R.string.task));
+		dialog.setButtons(getString(R.string.add), getString(R.string.cancel), new OnInputClickListener() {
+			@Override
+			public void onInputOkClick(String inputText) {
+				if (TextUtils.isEmpty(inputText)) {
+					Toast.makeText(getActivity(), R.string.describe_task, Toast.LENGTH_SHORT).show();
+				} else {
+					Task task = new Task(0, classId, parentId, inputText, dateView.getSelectedTime(), false);
+					dbStorage.addTask(task);
+					updateTasks();
+				}
+			}
+			@Override
+			public void onInputCancelClick() {}
+		});
+		dialog.show(getChildFragmentManager(), "add_task");	
 	}
 
 }

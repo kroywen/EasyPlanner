@@ -18,11 +18,11 @@
             android:src="@drawable/info_icon" />
         
         <TextView
+            android:id="@+id/titleView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
-            android:textColor="@android:color/white"
-            android:text="@string/information" />
+            android:textColor="@android:color/white" />
         
     </LinearLayout>
     
@@ -43,21 +43,19 @@
             android:orientation="vertical">
         
 	        <TextView 
+	            android:id="@+id/textView"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:textColor="#2c2c2c"
-	            android:gravity="center_horizontal"
-	            android:text="@string/enter_class_name" />
+	            android:gravity="center_horizontal" />
 	        
 	        <EditText
-	            android:id="@+id/classNameView"
+	            android:id="@+id/inputView"
 	            android:layout_width="match_parent"
 	            android:layout_height="wrap_content"
 	            android:layout_marginTop="5dp"
 	            android:inputType="text"
 	            android:maxLines="1"
-	            android:hint="@string/class_name"
-	            android:gravity="center_horizontal"
 	            android:background="@drawable/edittext_background" />
         
         </LinearLayout>
@@ -73,17 +71,15 @@
                 android:layout_width="100dp"
                 android:layout_height="35dp"
                 android:textColor="@color/btn_text_color"
-                android:background="@drawable/btn_left_background"
-                android:text="@string/cancel" />              
+                android:background="@drawable/btn_left_background" />              
             
             <Button
-                android:id="@+id/addBtn"
+                android:id="@+id/okBtn"
                 android:layout_width="100dp"
                 android:layout_height="35dp"
                 android:layout_marginLeft="-1dp"
                 android:textColor="@color/btn_text_color"
-                android:background="@drawable/btn_right_background"
-                android:text="@string/add" />
+                android:background="@drawable/btn_right_background" />
             
         </LinearLayout>
         

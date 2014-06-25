@@ -137,5 +137,9 @@ public class DateView extends RelativeLayout implements OnClickListener {
 	public void setOnDateChangedListener(OnDateChangedListener listener) {
 		this.listener = listener;
 	}
+	
+	public long getSelectedTime() {
+		return calendar.getTimeInMillis();
+	}
 
 }

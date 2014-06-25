@@ -5,11 +5,23 @@
     android:background="#f4f9fd">
 
     <TextView 
-        android:id="@+id/empty"
+        android:id="@+id/emptyView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:textColor="#b0b0b0"
         android:text="@string/no_tasks" />
+    
+    <ScrollView 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        
+	    <LinearLayout 
+	        android:id="@+id/tasksContent"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical" />
+    
+    </ScrollView>
 
 </RelativeLayout>
