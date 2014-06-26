@@ -19,27 +19,27 @@ public class DateView extends RelativeLayout implements OnClickListener {
 		void onDateChanged(long time);
 	}
 
-	private ImageView dayOfWeekNext;
-	private ImageView dayOfWeekPrev;
-	private TextView dayOfWeekView;
+	protected ImageView dayOfWeekNext;
+	protected ImageView dayOfWeekPrev;
+	protected TextView dayOfWeekView;
 	
-	private ImageView dayNext;
-	private ImageView dayPrev;
-	private TextView dayView;
+	protected ImageView dayNext;
+	protected ImageView dayPrev;
+	protected TextView dayView;
 	
-	private ImageView monthNext;
-	private ImageView monthPrev;
-	private TextView monthView;
+	protected ImageView monthNext;
+	protected ImageView monthPrev;
+	protected TextView monthView;
 	
-	private ImageView yearNext;
-	private ImageView yearPrev;
-	private TextView yearView;
+	protected ImageView yearNext;
+	protected ImageView yearPrev;
+	protected TextView yearView;
 	
-	private Calendar calendar;
-	private String[] daysOfWeek;
-	private String[] months;
+	protected Calendar calendar;
+	protected String[] daysOfWeek;
+	protected String[] months;
 	
-	private OnDateChangedListener listener;
+	protected OnDateChangedListener listener;
 	
 	public DateView(Context context) {
 		this(context, null);
@@ -50,7 +50,7 @@ public class DateView extends RelativeLayout implements OnClickListener {
 		init();
 	}
 	
-	private void init() {
+	protected void init() {
 		daysOfWeek = getContext().getResources().getStringArray(R.array.days_of_week);
 		months = getContext().getResources().getStringArray(R.array.months);
 		
@@ -65,7 +65,7 @@ public class DateView extends RelativeLayout implements OnClickListener {
 		calendar = Calendar.getInstance();
 	}
 	
-	private void initializeViews(View view) {
+	protected void initializeViews(View view) {
 		dayOfWeekNext = (ImageView) view.findViewById(R.id.dayOfWeekNext);
 		dayOfWeekNext.setOnClickListener(this);
 		dayOfWeekPrev = (ImageView) view.findViewById(R.id.dayOfWeekPrev);
@@ -92,13 +92,17 @@ public class DateView extends RelativeLayout implements OnClickListener {
 	}
 	
 	public void setDate(long time) {
+		setDate(time, true);
+	}
+	
+	public void setDate(long time, boolean callListener) {
 		calendar.setTimeInMillis(time);
 		dayOfWeekView.setText(daysOfWeek[calendar.get(Calendar.DAY_OF_WEEK)]);
 		dayView.setText(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
 		monthView.setText(months[calendar.get(Calendar.MONTH)]);
 		yearView.setText(String.valueOf(calendar.get(Calendar.YEAR)));
 		
-		if (listener != null) {
+		if (callListener && listener != null) {
 			listener.onDateChanged(time);
 		}
 	}

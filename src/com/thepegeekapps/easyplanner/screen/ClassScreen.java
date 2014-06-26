@@ -1,45 +1,51 @@
 package com.thepegeekapps.easyplanner.screen;
 
+import java.util.Calendar;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import com.thepegeekapps.easyplanner.R;
 import com.thepegeekapps.easyplanner.fragment.DayFragment;
 import com.thepegeekapps.easyplanner.fragment.MonthFragment;
+import com.thepegeekapps.easyplanner.fragment.OnDataChangeListener;
+import com.thepegeekapps.easyplanner.fragment.OnTimeSelectListener;
 import com.thepegeekapps.easyplanner.fragment.WeekFragment;
 import com.thepegeekapps.easyplanner.model.Clas;
 import com.thepegeekapps.easyplanner.storage.db.DatabaseHelper;
 import com.thepegeekapps.easyplanner.storage.db.DatabaseStorage;
 
-public class ClassScreen extends FragmentActivity implements OnClickListener, OnCheckedChangeListener, OnPageChangeListener {
+public class ClassScreen extends FragmentActivity implements OnClickListener, OnCheckedChangeListener, OnPageChangeListener, 
+	OnDataChangeListener, OnTimeSelectListener {
 	
 	private ViewPager pager;
-	private PagerAdapter pagerAdapter;
+	private ClassFragmentPagerAdapter pagerAdapter;
 	private RadioGroup viewSelectorGroup;
 	
 	private DatabaseStorage dbStorage;
 	private long classId;
 	private Clas clas;
 	
+	private Calendar calendar;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.class_screen);
 		dbStorage = new DatabaseStorage(this);
+		calendar = Calendar.getInstance();
 		getIntentData();
 		initializeViews();
 		updateViews();
@@ -103,6 +109,58 @@ public class ClassScreen extends FragmentActivity implements OnClickListener, On
 		viewSelectorGroup.setOnCheckedChangeListener(this);
 	}
 	
+	@Override
+	public void onDataChanged() {
+		WeekFragment weekFragment = (WeekFragment) pagerAdapter.findFragmentByPosition(1);
+		if (weekFragment != null) {
+			weekFragment.updateViews();
+		}
+		MonthFragment monthFragment = (MonthFragment) pagerAdapter.findFragmentByPosition(2);
+		if (monthFragment != null) {
+			monthFragment.updateViews();
+		}
+	}
+	
+	@Override
+	public void onTimeSelected(int position, long time) {
+		if (position == 0) {
+			WeekFragment weekFragment = (WeekFragment) pagerAdapter.findFragmentByPosition(1);
+			if (weekFragment != null) {
+				weekFragment.setCurrentTime(time);
+			}
+			MonthFragment monthFragment = (MonthFragment) pagerAdapter.findFragmentByPosition(2);
+			if (monthFragment != null) {
+				monthFragment.setCurrentTime(time);
+			}
+		} else if (position == 1) {
+			DayFragment dayFragment = (DayFragment) pagerAdapter.findFragmentByPosition(0);
+			if (dayFragment != null) {
+				dayFragment.setCurrentTime(time);
+			}
+			MonthFragment monthFragment = (MonthFragment) pagerAdapter.findFragmentByPosition(2);
+			if (monthFragment != null) {
+				monthFragment.setCurrentTime(time);
+			}
+		} else {
+			DayFragment dayFragment = (DayFragment) pagerAdapter.findFragmentByPosition(0);
+			if (dayFragment != null) {
+				dayFragment.setCurrentTime(time);
+			}
+			WeekFragment weekFragment = (WeekFragment) pagerAdapter.findFragmentByPosition(1);
+			if (weekFragment != null) {
+				weekFragment.setCurrentTime(time);
+			}
+		}
+	}
+	
+	public long getTime() {
+		return calendar.getTimeInMillis();
+	}
+	
+	public void setTime(long time) {
+		calendar.setTimeInMillis(time);
+	}
+	
 	private class ClassFragmentPagerAdapter extends FragmentPagerAdapter {
 		
 		public ClassFragmentPagerAdapter(FragmentManager fm) {
@@ -121,6 +179,12 @@ public class ClassScreen extends FragmentActivity implements OnClickListener, On
 			return 3;
 		}
 		
+		public Fragment findFragmentByPosition(int position) {
+		    return getSupportFragmentManager().findFragmentByTag("android:switcher:" + pager.getId() + ":" + getItemId(position));
+		}
+		
 	}
+
+		
 
 }

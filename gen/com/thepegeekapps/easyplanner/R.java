@@ -9,9 +9,9 @@ package com.thepegeekapps.easyplanner;
 
 public final class R {
     public static final class array {
-        public static final int days_of_week=0x7f070001;
-        public static final int menu_items=0x7f070000;
-        public static final int months=0x7f070002;
+        public static final int days_of_week=0x7f080001;
+        public static final int menu_items=0x7f080000;
+        public static final int months=0x7f080002;
     }
     public static final class attr {
     }
@@ -90,63 +90,68 @@ public final class R {
         public static final int visit_site_icon=0x7f020037;
     }
     public static final class id {
-        public static final int activitiesContent=0x7f09001e;
-        public static final int activitiesEmptyView=0x7f09001f;
-        public static final int addActivityBtn=0x7f09001b;
-        public static final int addClassBtn=0x7f090038;
-        public static final int addHomeworkBtn=0x7f090023;
-        public static final int addMediaBtn=0x7f090020;
-        public static final int addTaskBtn=0x7f090026;
-        public static final int allBtn=0x7f09002f;
-        public static final int cancelBtn=0x7f09000c;
-        public static final int classesBtn=0x7f09002b;
-        public static final int classesList=0x7f090009;
-        public static final int completedCb=0x7f090035;
-        public static final int currentDateView=0x7f09001c;
-        public static final int currentDayView=0x7f09001d;
-        public static final int dateView=0x7f09001a;
-        public static final int dayBtn=0x7f090005;
-        public static final int dayNext=0x7f090011;
-        public static final int dayOfWeekNext=0x7f09000e;
-        public static final int dayOfWeekPrev=0x7f09000f;
-        public static final int dayOfWeekView=0x7f090010;
-        public static final int dayPrev=0x7f090012;
-        public static final int dayView=0x7f090013;
-        public static final int description=0x7f090000;
-        public static final int emptyView=0x7f090008;
-        public static final int homeworksContent=0x7f090024;
-        public static final int homeworksEmptyView=0x7f090025;
-        public static final int image=0x7f090031;
-        public static final int inner_content=0x7f09002a;
-        public static final int inputView=0x7f090029;
-        public static final int mediaContent=0x7f090021;
-        public static final int mediaEmptyView=0x7f090022;
-        public static final int menuBtn=0x7f090036;
-        public static final int menuList=0x7f090030;
-        public static final int monthBtn=0x7f090007;
-        public static final int monthNext=0x7f090014;
-        public static final int monthPrev=0x7f090015;
-        public static final int monthView=0x7f090016;
-        public static final int name=0x7f090002;
-        public static final int okBtn=0x7f09000d;
-        public static final int pager=0x7f090003;
-        public static final int removeBtn=0x7f090001;
-        public static final int slidedout_cover=0x7f090034;
-        public static final int slideout_placeholder=0x7f090033;
-        public static final int tasksBtn=0x7f09002c;
-        public static final int tasksContent=0x7f090027;
-        public static final int tasksEmptyView=0x7f090028;
-        public static final int text=0x7f090032;
-        public static final int textView=0x7f09000b;
-        public static final int timeSelectorGroup=0x7f09002d;
-        public static final int title=0x7f090037;
-        public static final int titleView=0x7f09000a;
-        public static final int todayBtn=0x7f09002e;
-        public static final int viewSelectorGroup=0x7f090004;
-        public static final int weekBtn=0x7f090006;
-        public static final int yearNext=0x7f090017;
-        public static final int yearPrev=0x7f090018;
-        public static final int yearView=0x7f090019;
+        public static final int activitiesContent=0x7f0a001e;
+        public static final int activitiesEmptyView=0x7f0a001f;
+        public static final int addActivityBtn=0x7f0a001b;
+        public static final int addClassBtn=0x7f0a0039;
+        public static final int addHomeworkBtn=0x7f0a0023;
+        public static final int addMediaBtn=0x7f0a0020;
+        public static final int addTaskBtn=0x7f0a0026;
+        public static final int allBtn=0x7f0a002f;
+        public static final int cancelBtn=0x7f0a000c;
+        public static final int classesBtn=0x7f0a002b;
+        public static final int classesList=0x7f0a0009;
+        public static final int completedCb=0x7f0a0036;
+        public static final int currentDateView=0x7f0a001c;
+        public static final int currentDayView=0x7f0a001d;
+        public static final int date1View=0x7f0a003a;
+        public static final int date2View=0x7f0a003c;
+        public static final int dateView=0x7f0a001a;
+        public static final int day1View=0x7f0a003b;
+        public static final int day2View=0x7f0a003d;
+        public static final int dayBtn=0x7f0a0005;
+        public static final int dayNext=0x7f0a0011;
+        public static final int dayOfWeekNext=0x7f0a000e;
+        public static final int dayOfWeekPrev=0x7f0a000f;
+        public static final int dayOfWeekView=0x7f0a0010;
+        public static final int dayPrev=0x7f0a0012;
+        public static final int dayView=0x7f0a0013;
+        public static final int description=0x7f0a0000;
+        public static final int emptyView=0x7f0a0008;
+        public static final int homeworksContent=0x7f0a0024;
+        public static final int homeworksEmptyView=0x7f0a0025;
+        public static final int image=0x7f0a0031;
+        public static final int inner_content=0x7f0a002a;
+        public static final int inputView=0x7f0a0029;
+        public static final int list=0x7f0a0033;
+        public static final int mediaContent=0x7f0a0021;
+        public static final int mediaEmptyView=0x7f0a0022;
+        public static final int menuBtn=0x7f0a0037;
+        public static final int menuList=0x7f0a0030;
+        public static final int monthBtn=0x7f0a0007;
+        public static final int monthNext=0x7f0a0014;
+        public static final int monthPrev=0x7f0a0015;
+        public static final int monthView=0x7f0a0016;
+        public static final int name=0x7f0a0002;
+        public static final int okBtn=0x7f0a000d;
+        public static final int pager=0x7f0a0003;
+        public static final int removeBtn=0x7f0a0001;
+        public static final int slidedout_cover=0x7f0a0035;
+        public static final int slideout_placeholder=0x7f0a0034;
+        public static final int tasksBtn=0x7f0a002c;
+        public static final int tasksContent=0x7f0a0027;
+        public static final int tasksEmptyView=0x7f0a0028;
+        public static final int text=0x7f0a0032;
+        public static final int textView=0x7f0a000b;
+        public static final int timeSelectorGroup=0x7f0a002d;
+        public static final int title=0x7f0a0038;
+        public static final int titleView=0x7f0a000a;
+        public static final int todayBtn=0x7f0a002e;
+        public static final int viewSelectorGroup=0x7f0a0004;
+        public static final int weekBtn=0x7f0a0006;
+        public static final int yearNext=0x7f0a0017;
+        public static final int yearPrev=0x7f0a0018;
+        public static final int yearView=0x7f0a0019;
     }
     public static final class layout {
         public static final int activity_list_item=0x7f030000;
@@ -170,6 +175,10 @@ public final class R {
         public static final int tasks_fragment=0x7f030012;
         public static final int titlebar=0x7f030013;
         public static final int week_fragment=0x7f030014;
+        public static final int week_list_item=0x7f030015;
+    }
+    public static final class plurals {
+        public static final int daysCount=0x7f070000;
     }
     public static final class string {
         public static final int activities=0x7f06001f;
@@ -208,6 +217,8 @@ public final class R {
         public static final int planned_homework=0x7f060026;
         public static final int preparation_tasks=0x7f06002b;
         public static final int report_bug=0x7f060014;
+        public static final int required_days=0x7f060030;
+        public static final int required_today=0x7f060031;
         public static final int review_app=0x7f060013;
         public static final int save=0x7f060007;
         public static final int settings=0x7f060010;
@@ -232,11 +243,11 @@ public final class R {
             backward-compatibility can go here.
         
          */
-        public static final int AppBaseTheme=0x7f080000;
+        public static final int AppBaseTheme=0x7f090000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f080001;
-        public static final int CustomDialog=0x7f080002;
+        public static final int AppTheme=0x7f090001;
+        public static final int CustomDialog=0x7f090002;
     }
 }

@@ -65,19 +65,19 @@
 	                android:layout_marginLeft="10dp"
 	                android:background="@drawable/today_marker"
 	                android:textColor="@android:color/white"
-	                android:textSize="24sp"
+	                android:textSize="28sp"
 	                android:gravity="top|center_horizontal"
-	                android:padding="5dp" />
+	                android:paddingTop="2dp" />
 	            
 	            <TextView
 	                android:id="@+id/currentDayView"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
-	                android:layout_marginTop="5dp"
+	                android:layout_marginTop="6dp"
 	                android:layout_marginLeft="5dp"
 	                android:layout_toRightOf="@+id/currentDateView"
 	                android:textColor="#dcdfe3"
-	                android:textSize="20sp" />
+	                android:textSize="18sp" />
 	            
 	        </RelativeLayout>
 	        

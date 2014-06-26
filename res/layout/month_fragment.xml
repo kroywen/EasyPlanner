@@ -4,10 +4,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
     
-    <com.thepegeekapps.easyplanner.ui.view.DateView
+    <com.thepegeekapps.easyplanner.ui.view.MonthDateView
         android:id="@+id/dateView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:listSelector="@android:color/transparent" />    
 
 </LinearLayout>

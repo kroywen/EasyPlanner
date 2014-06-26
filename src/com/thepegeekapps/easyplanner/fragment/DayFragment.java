@@ -3,6 +3,7 @@ package com.thepegeekapps.easyplanner.fragment;
 import java.util.Calendar;
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -24,6 +25,7 @@ import com.thepegeekapps.easyplanner.dialog.InputDialog.OnInputClickListener;
 import com.thepegeekapps.easyplanner.model.Activiti;
 import com.thepegeekapps.easyplanner.model.Homework;
 import com.thepegeekapps.easyplanner.model.Task;
+import com.thepegeekapps.easyplanner.screen.ClassScreen;
 import com.thepegeekapps.easyplanner.storage.db.DatabaseHelper;
 import com.thepegeekapps.easyplanner.storage.db.DatabaseStorage;
 import com.thepegeekapps.easyplanner.ui.view.DateView;
@@ -54,12 +56,14 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 	private TextView tasksEmptyView;
 	
 	private DatabaseStorage dbStorage;
-	private Calendar calendar;
 	private long classId;
 	private String[] daysOfWeek;
 	private List<Activiti> activities;
 	private List<Homework> homeworks;
 	private List<Task> tasks;
+	
+	private OnDataChangeListener dataListener;
+	private OnTimeSelectListener timeListener;
 	
 	public static DayFragment newInstance(long classId) {
 		DayFragment f = new DayFragment();
@@ -74,8 +78,6 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 		super.onCreate(savedInstanceState);
 		dbStorage = new DatabaseStorage(getActivity());
 		classId = (getArguments() != null) ? getArguments().getLong(DatabaseHelper.FIELD_ID) : 0;
-		calendar = Calendar.getInstance();
-		
 		daysOfWeek = getResources().getStringArray(R.array.days_of_week);
 	}
 	
@@ -87,9 +89,20 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 	}
 	
 	@Override
-	public void onStart() {
-		super.onStart();
-		dateView.setDate(calendar.getTimeInMillis());
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		try {
+			dataListener = (OnDataChangeListener) activity;
+			timeListener = (OnTimeSelectListener) activity;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		dateView.setDate(getTime());
 	}
 	
 	private void initializeViews(View view) {
@@ -120,7 +133,7 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 		tasksEmptyView = (TextView) view.findViewById(R.id.tasksEmptyView);
 	}
 	
-	private void updateContents() {
+	public void updateViews() {
 		updateCurrentDay();
 		updateActivities();
 		updateHomeworks();
@@ -128,13 +141,15 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 	}
 	
 	private void updateCurrentDay() {
-		currentDateView.setText(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(getTime());
+		currentDateView.setText(Utilities.addLeadingZero(calendar.get(Calendar.DAY_OF_MONTH)));
 		currentDayView.setText(daysOfWeek[calendar.get(Calendar.DAY_OF_WEEK)]);
 	}
 	
 	private void updateActivities() {
-		long dayStart = Utilities.getDayStart(calendar.getTimeInMillis());
-		long dayEnd = Utilities.getDayEnd(calendar.getTimeInMillis());
+		long dayStart = Utilities.getDayStart(getTime());
+		long dayEnd = Utilities.getDayEnd(getTime());
 		String selection = DatabaseHelper.FIELD_CLASS_ID + "=" + classId + " AND " +
 				DatabaseHelper.FIELD_TIME + " > " + dayStart + " AND " +
 				DatabaseHelper.FIELD_TIME + " < " + dayEnd;
@@ -181,6 +196,9 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 				dbStorage.deleteActivity(activity);
 				updateActivities();
 				dialog.dismiss();
+				if (dataListener != null) {
+					dataListener.onDataChanged();
+				}
 			}
 		});
 		dialog.setCancelListener(getString(R.string.cancel), new View.OnClickListener() {
@@ -194,8 +212,8 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 	}
 	
 	private void updateHomeworks() {
-		long dayStart = Utilities.getDayStart(calendar.getTimeInMillis());
-		long dayEnd = Utilities.getDayEnd(calendar.getTimeInMillis());
+		long dayStart = Utilities.getDayStart(getTime());
+		long dayEnd = Utilities.getDayEnd(getTime());
 		String selection = DatabaseHelper.FIELD_CLASS_ID + "=" + classId + " AND " +
 				DatabaseHelper.FIELD_TIME + " > " + dayStart + " AND " +
 				DatabaseHelper.FIELD_TIME + " < " + dayEnd;
@@ -255,8 +273,8 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 	}
 	
 	private void updateTasks() {
-		long dayStart = Utilities.getDayStart(calendar.getTimeInMillis());
-		long dayEnd = Utilities.getDayEnd(calendar.getTimeInMillis());
+		long dayStart = Utilities.getDayStart(getTime());
+		long dayEnd = Utilities.getDayEnd(getTime());
 		String selection = DatabaseHelper.FIELD_CLASS_ID + "=" + classId + " AND " +
 				DatabaseHelper.FIELD_TIME + " > " + dayStart + " AND " +
 				DatabaseHelper.FIELD_TIME + " < " + dayEnd;
@@ -376,8 +394,11 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 
 	@Override
 	public void onDateChanged(long time) {
-		calendar.setTimeInMillis(time);
-		updateContents();
+		setTime(time);
+		updateViews();
+		if (timeListener != null) {
+			timeListener.onTimeSelected(0, time);
+		}
 	}
 
 	@Override
@@ -409,6 +430,9 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 					Activiti activity = new Activiti(0, classId, inputText, dateView.getSelectedTime());
 					dbStorage.addActivity(activity);
 					updateActivities();
+					if (dataListener != null) {
+						dataListener.onDataChanged();
+					}
 				}
 			}
 			@Override
@@ -459,6 +483,21 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 			public void onInputCancelClick() {}
 		});
 		dialog.show(getChildFragmentManager(), "add_task");	
+	}
+	
+	public void setCurrentTime(long time) {
+		if (dateView != null) {
+			dateView.setDate(time, false);
+			updateViews();
+		}
+	}
+	
+	public long getTime() {
+		return ((ClassScreen) getActivity()).getTime();
+	}
+	
+	public void setTime(long time) {
+		((ClassScreen) getActivity()).setTime(time);
 	}
 
 }

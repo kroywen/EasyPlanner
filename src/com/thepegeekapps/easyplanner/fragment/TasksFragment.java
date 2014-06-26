@@ -6,8 +6,10 @@ import java.util.List;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Html;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,8 +104,41 @@ public class TasksFragment extends Fragment {
 			final Task task = tasks.get(i);
 			View taskView = inflater.inflate(R.layout.task_main_list_item, null);
 			
+			long now = System.currentTimeMillis();
+			String daysStr = null;
+			if (now > task.getTime()) {
+				if (Utilities.isSameDay(now, task.getTime())) {
+					daysStr = getString(R.string.required_today);
+				} else {
+					daysStr = getString(R.string.overdue);
+				}
+			} else {
+				int daysCount = Utilities.getDaysCount(now, task.getTime());
+				daysStr = (daysCount == 0) ? getString(R.string.today) :
+					getResources().getQuantityString(R.plurals.daysCount, daysCount, daysCount);
+			}
+			String timeStr = Utilities.parseTime(task.getTime(), Utilities.EEE_dd_LLL_yyyy);
+			String requiredText = getString(R.string.required_days, daysStr, timeStr);
+			
+			int requiredColor = 0;
+			if (now > task.getTime()) {
+				if (Utilities.isSameDay(now, task.getTime())) {
+					requiredColor = 0xff2c2c2c;
+				} else {
+					requiredColor = 0xffd21317;
+				}
+			} else {
+				requiredColor = 0xff2c2c2c;
+			}
+			String cbText = task.getDescription() + "\n" + requiredText;
+			SpannableString ss = new SpannableString(cbText);
+			ss.setSpan(new RelativeSizeSpan(1.2f), 0, task.getDescription().length(), 0);
+			ss.setSpan(new ForegroundColorSpan(0xff448edb), 0, task.getDescription().length(), 0);
+			ss.setSpan(new ForegroundColorSpan(requiredColor), task.getDescription().length()+1, cbText.length(), 0);
+			ss.setSpan(new RelativeSizeSpan(.8f), task.getDescription().length()+1, cbText.length(), 0);
+			
 			final CheckBox completedCb = (CheckBox) taskView.findViewById(R.id.completedCb);
-			completedCb.setText(Html.fromHtml(task.getDescription() + "<br /><font color=\"#ff0000\">Required in 3 days</font>"));
+			completedCb.setText(ss);
 			if (task.hasSubtasks()) {
 				completedCb.setChecked(task.areSubtasksCompleted());
 				completedCb.setEnabled(false);
