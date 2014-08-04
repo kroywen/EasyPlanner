@@ -1,5 +1,6 @@
 package com.thepegeekapps.easyplanner.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,9 +21,7 @@ public class MenuAdapter extends BaseAdapter {
 		R.drawable.review_app_icon,
 		R.drawable.report_bug_icon,
 		R.drawable.tell_friend_icon,
-		R.drawable.link_unchecked,
-		R.drawable.link_unchecked,
-		R.drawable.link_unchecked
+		0
 	};
 	
 	public MenuAdapter(Context context) {
@@ -45,6 +44,7 @@ public class MenuAdapter extends BaseAdapter {
 		return 0;
 	}
 
+	@SuppressLint("InflateParams")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
@@ -53,6 +53,7 @@ public class MenuAdapter extends BaseAdapter {
 		}
 		
 		ImageView image = (ImageView) convertView.findViewById(R.id.image);
+		image.setVisibility(items[position].equalsIgnoreCase("logout") ? View.GONE : View.VISIBLE);
 		image.setImageResource(images[position]);
 		
 		TextView text = (TextView) convertView.findViewById(R.id.text);

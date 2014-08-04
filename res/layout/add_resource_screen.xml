@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginLeft="15dp"
+    android:layout_marginRight="15dp">
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:background="#458edb"
+        android:gravity="center">
+        
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/info_icon" />
+        
+        <TextView
+            android:id="@+id/titleView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:textColor="@android:color/white"
+            android:text="@string/information" />
+        
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="15dp"
+        android:background="@android:color/white">
+        
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#2c2c2c"
+            android:textSize="13sp"
+            android:text="@string/add_resource_text" />
+        
+        <RadioGroup 
+            android:id="@+id/mediaSourceGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+            
+            <RadioButton 
+                android:id="@+id/sourceDropbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/rb_dropbox"
+                android:button="@null"
+                android:padding="7dp"
+                android:gravity="center"
+                android:background="@drawable/rb_left_inverse_background"
+                android:checked="true" />
+            
+            <RadioButton
+                android:id="@+id/sourceGoogleDrive" 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="-2dp"
+                android:drawableLeft="@drawable/rb_google_drive"
+                android:button="@null"
+                android:padding="7dp"
+                android:gravity="center"
+                android:background="@drawable/rb_middle_inverse_background" />
+            
+            <RadioButton
+                android:id="@+id/sourceOneDrive" 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="-2dp"
+                android:drawableLeft="@drawable/rb_one_drive"
+                android:button="@null"
+                android:padding="7dp"
+                android:gravity="center"
+                android:background="@drawable/rb_middle_inverse_background" />
+            
+            <RadioButton 
+                android:id="@+id/sourceLink"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="-2dp"
+                android:drawableLeft="@drawable/rb_link"
+                android:button="@null"
+                android:padding="7dp"
+                android:gravity="center"
+                android:drawablePadding="0dp"
+                android:background="@drawable/rb_middle_inverse_background" />
+            
+            <RadioButton 
+                android:id="@+id/sourceGallery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="-2dp"
+                android:drawableLeft="@drawable/rb_gallery"
+                android:button="@null"
+                android:padding="7dp"
+                android:gravity="center"
+                android:background="@drawable/rb_middle_inverse_background" />
+            
+            <RadioButton 
+                android:id="@+id/sourceCamera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="-2dp"
+                android:drawableLeft="@drawable/rb_camera"
+                android:button="@null"
+                android:padding="7dp"
+                android:gravity="center"
+                android:background="@drawable/rb_right_inverse_background" />
+            
+        </RadioGroup>
+        
+        <RelativeLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp">
+            
+            <include layout="@layout/add_dropbox_layout" />
+            <include layout="@layout/add_google_drive_layout" />
+            <include layout="@layout/add_one_drive_layout" />
+            <include layout="@layout/add_link_layout" />
+            <include layout="@layout/add_gallery_layout" />
+            <include layout="@layout/add_camera_layout" />
+            
+        </RelativeLayout>
+        
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="10dp">
+            
+            <Button
+                android:id="@+id/cancelBtn"
+                android:layout_width="100dp"
+                android:layout_height="35dp"
+                android:textColor="@color/btn_text_color"
+                android:background="@drawable/btn_left_background"
+                android:text="@string/cancel" />
+            
+            <Button
+                android:id="@+id/addBtn"
+                android:layout_width="100dp"
+                android:layout_height="35dp"
+                android:layout_marginLeft="-2dp"
+                android:textColor="@color/btn_text_color"
+                android:background="@drawable/btn_right_background"
+                android:text="@string/add" />
+            
+        </LinearLayout>
+        
+    </LinearLayout>
+
+</LinearLayout>

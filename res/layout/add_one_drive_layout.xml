@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutOneDrive"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:visibility="invisible">
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#2c2c2c"
+        android:textStyle="bold"
+        android:text="@string/one_drive" />
+    
+    <TextView
+        android:id="@+id/oneDriveText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/textview_background"
+        android:padding="10dp"
+        android:gravity="center_horizontal"
+        android:textColor="#aaaaaa"
+        android:text="@string/select_file" />
+    
+    <Button
+        android:id="@+id/oneDriveBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:gravity="center_horizontal"
+        android:background="@drawable/btn_background"
+        android:drawableLeft="@drawable/icon_one_drive_black"
+        android:drawablePadding="10dp"
+        android:textColor="@color/btn_text_color"
+        android:text="@string/browse_one_drive" />
+    
+</LinearLayout>

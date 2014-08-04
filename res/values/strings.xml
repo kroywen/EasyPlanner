@@ -3,7 +3,15 @@
 
     <string name="app_name">Easy Planner</string>
     
+    <string name="no_connection">Please make sure that connection is active</string>
+    <string name="login_to_get_started">Log in to get started</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="authenticating">Authenticating</string>
+    <string name="error">Error</string>
     <string name="classes">Classes</string>
+    <string name="loading_classes">Loading classes</string>
+    <string name="deleting_class">Deleting class</string>
     <string name="no_classes">You have no classes yet</string>
     <string name="add_class">Add class</string>
     <string name="class_name">Class name</string>
@@ -24,12 +32,7 @@
     <string name="review_app">Review This App</string>
     <string name="report_bug">Report A Bug</string>
     <string name="tell_friend">Tell A Friend</string>
-    <string name="link_dropbox">Link Dropbox</string>
-    <string name="unlink_dropbox">Unlink Dropbox</string>
-    <string name="link_google">Link Google</string>
-    <string name="unlink_google">Unlink Google</string>
-    <string name="link_evernote">Link Evernote</string>
-    <string name="unlink_evernote">Unlink Evernote</string>
+    <string name="logout">Logout</string>
     <string name="day">Day</string>
     <string name="week">Week</string>
     <string name="month">Month</string>
@@ -52,6 +55,35 @@
     <string name="overdue">Overdue</string>
     <string name="required_days">%1$s - %2$s</string>
     <string name="required_today">Required Today</string>
+    <string name="add_resource_text">Please select resource type. Note: You can add files from multiple sources at once</string>
+    <string name="dropbox">Dropbox</string>
+    <string name="select_file">Please select file first</string>
+    <string name="browse_dropbox">Browse Dropbox</string> 
+    <string name="google_drive">Google Drive</string>
+    <string name="browse_google_drive">Browse Google Drive</string>
+    <string name="deleting_activity">Deleting activity</string>
+    <string name="adding_activity">Adding activity</string>
+    <string name="deleting_homework">Deleting homework</string>
+    <string name="adding_homework">Adding homework</string>
+    <string name="adding_task">Adding task</string>
+    <string name="deleting_task">Deleting task</string>
+    <string name="changing_task_status">Changing task status</string>
+    <string name="loading_activities">Loading activities</string>
+    <string name="web_page_link">Web page link</string>
+    <string name="browse_web">Browse Web</string>
+    <string name="photo_library">Photo Library</string>
+    <string name="please_select_media">Please select media first</string>
+    <string name="select_media">Select Media</string>
+    <string name="camera">Camera</string>
+    <string name="capture_media">Capture Media</string>
+    <string name="adding">Adding &#8230;</string>
+    <string name="photo">Photo</string>
+    <string name="close">Close</string>
+    <string name="one_drive">OneDrive</string>
+    <string name="browse_one_drive">Browse OneDrive</string>
+    <string name="downloading">Downloading &#8230;</string>
+    <string name="download_pattern">%1$s out of %2$s</string>
+    <string name="download_error">An error occurred while downloading files</string>
     
     <plurals name="daysCount">
         <item quantity="one">Required in %d Day</item>
@@ -64,9 +96,7 @@
         <item>@string/review_app</item>
         <item>@string/report_bug</item>
         <item>@string/tell_friend</item>
-        <item>@string/link_dropbox</item>
-        <item>@string/link_google</item>
-        <item>@string/link_evernote</item>
+        <item>@string/logout</item>
     </string-array>
     
     <string-array name="days_of_week">

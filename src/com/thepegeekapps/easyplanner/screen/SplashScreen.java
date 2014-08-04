@@ -1,15 +1,15 @@
 package com.thepegeekapps.easyplanner.screen;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 
 import com.thepegeekapps.easyplanner.R;
+import com.thepegeekapps.easyplanner.storage.Settings;
 
-public class SplashScreen extends Activity {
+public class SplashScreen extends BaseScreen {
 	
 	public static final int STOPSPLASH = 0;
 	public static final long SPLASHTIME = 2000;
@@ -31,12 +31,29 @@ public class SplashScreen extends Activity {
         @Override  
         public void handleMessage(Message msg) {
         	if (msg.what == STOPSPLASH) {
-        		Intent intent = new Intent(SplashScreen.this, MainScreen.class);
-        		startActivity(intent);
-        		SplashScreen.this.finish();
+        		String token = settings.getString(Settings.TOKEN);
+        		long expireDate = settings.getLong(Settings.TOKEN_EXPIRE_DATE);
+        		boolean isExpired = System.currentTimeMillis() > expireDate;
+        		if (TextUtils.isEmpty(token) || isExpired) {
+        			startLoginScreen();
+        		} else {
+        			startMainScreen();
+        		}
         	}
         	super.handleMessage(msg);
         }
     }; 
+    
+    private void startLoginScreen() {
+    	Intent intent = new Intent(this, LoginScreen.class);
+		startActivity(intent);
+		finish();
+    }
+    
+    private void startMainScreen() {
+    	Intent intent = new Intent(this, MainScreen.class);
+		startActivity(intent);
+		finish();
+    }
 
 }

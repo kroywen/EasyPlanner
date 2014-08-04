@@ -1,9 +1,11 @@
 package com.thepegeekapps.easyplanner.screen;
 
+import java.util.List;
+
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -17,15 +19,20 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Toast;
 
 import com.thepegeekapps.easyplanner.R;
+import com.thepegeekapps.easyplanner.api.ApiData;
+import com.thepegeekapps.easyplanner.api.ApiResponse;
+import com.thepegeekapps.easyplanner.api.ApiService;
 import com.thepegeekapps.easyplanner.dialog.InputDialog;
 import com.thepegeekapps.easyplanner.dialog.InputDialog.OnInputClickListener;
 import com.thepegeekapps.easyplanner.fragment.ClassesFragment;
 import com.thepegeekapps.easyplanner.fragment.TasksFragment;
 import com.thepegeekapps.easyplanner.lib.slideout.SlideoutActivity;
 import com.thepegeekapps.easyplanner.model.Clas;
-import com.thepegeekapps.easyplanner.storage.db.DatabaseStorage;
+import com.thepegeekapps.easyplanner.util.Utilities;
 
-public class MainScreen extends FragmentActivity implements OnClickListener, OnPageChangeListener, OnCheckedChangeListener {
+public class MainScreen extends BaseScreen implements OnClickListener, OnPageChangeListener, OnCheckedChangeListener {
+	
+	public static final int MENU_REQUEST_CODE = 0;
 	
 	public static final int TIME_ALL = 0;
 	public static final int TIME_TODAY = 1;
@@ -39,7 +46,6 @@ public class MainScreen extends FragmentActivity implements OnClickListener, OnP
 	private View tasksBtn;
 	private View addClassBtn;
 	private RadioGroup timeSelectorGroup;
-	private DatabaseStorage dbStorage;
 	
 	private int tabSelected;
 	private int timeSelected;
@@ -48,9 +54,14 @@ public class MainScreen extends FragmentActivity implements OnClickListener, OnP
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_screen);
-		dbStorage = new DatabaseStorage(this);
 		initializeViews();
 		updateViews();
+		
+		if (Utilities.isConnectionAvailable(this)) {
+			requestClasses();
+		} else {
+			showConnectionErrorDialog();
+		}
 	}
 	
 	private void initializeViews() {
@@ -78,10 +89,26 @@ public class MainScreen extends FragmentActivity implements OnClickListener, OnP
 				findViewById(R.id.menuBtn).setOnClickListener(null);
 				int width = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, getResources().getDisplayMetrics());
 				SlideoutActivity.prepare(MainScreen.this, R.id.inner_content, width);
-				startActivity(new Intent(MainScreen.this, MenuScreen.class));
+				startActivityForResult(new Intent(MainScreen.this, MenuScreen.class), MENU_REQUEST_CODE);
 				overridePendingTransition(0, 0);
 			}
 		});
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == MENU_REQUEST_CODE) {
+			if (data == null) {
+				return;
+			}
+			boolean logout = data.getBooleanExtra("logout", false);
+			if (logout) {
+				Intent intent = new Intent(this, LoginScreen.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+				finish();
+			}
+		}
 	}
 	
 	private void updateViews() {
@@ -123,7 +150,7 @@ public class MainScreen extends FragmentActivity implements OnClickListener, OnP
 	}
 	
 	private void showAddClassDialog() {
-		InputDialog dialog = new InputDialog();
+		final InputDialog dialog = new InputDialog();
 		dialog.setTitle(getString(R.string.information));
 		dialog.setText(getString(R.string.enter_class_name));
 		dialog.setHint(getString(R.string.class_name));
@@ -133,9 +160,8 @@ public class MainScreen extends FragmentActivity implements OnClickListener, OnP
 				if (TextUtils.isEmpty(inputText)) {
 					Toast.makeText(MainScreen.this, R.string.enter_class_name, Toast.LENGTH_SHORT).show();
 				} else {
-					Clas clas = new Clas(0, inputText, System.currentTimeMillis());
-					dbStorage.addClass(clas);
-					updateViews();
+					dialog.hideSoftKeyborad();
+					requestAddClass(inputText);
 				}
 			}
 			@Override
@@ -175,6 +201,74 @@ public class MainScreen extends FragmentActivity implements OnClickListener, OnP
 		    return getSupportFragmentManager().findFragmentByTag("android:switcher:" + pager.getId() + ":" + getItemId(position));
 		}
 		
+	}
+	
+	public void tryDeleteClass(Clas clas) {
+		if (clas == null) {
+			return;
+		}
+		if (Utilities.isConnectionAvailable(this)) {
+			requestDeleteClass(clas);
+		} else {
+			showConnectionErrorDialog();
+		}
+	}
+	
+	private void requestDeleteClass(Clas clas) {
+		Intent intent = new Intent(this, ApiService.class);
+		intent.setData(Uri.parse(ApiData.CLASSES));
+		intent.setAction(ApiData.DELETE);
+		intent.putExtra(ApiData.PARAM_ID, clas.getId());
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		startService(intent);
+		showProgressDialog(R.string.deleting_class);
+	}
+	
+	private void requestClasses() {
+		Intent intent = new Intent(this, ApiService.class);
+		intent.setData(Uri.parse(ApiData.CLASSES));
+		intent.setAction(ApiData.GET);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		startService(intent);
+		showProgressDialog(R.string.loading_classes);
+	}
+	
+	private void requestAddClass(String className) {
+		Intent intent = new Intent(this, ApiService.class);
+		intent.setData(Uri.parse(ApiData.CLASSES));
+		intent.setAction(ApiData.POST);
+		intent.putExtra(ApiData.PARAM_NAME, className);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		startService(intent);
+		showProgressDialog(R.string.add_class);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public void onApiResponse(int apiStatus, ApiResponse apiResponse) {
+		hideProgressDialog();
+		if (apiStatus == ApiService.API_STATUS_SUCCESS) {
+			int status = apiResponse.getStatus();
+			String requestName = apiResponse.getRequestName();
+			String method = apiResponse.getMethod();
+			if (status == ApiResponse.STATUS_SUCCESS) {
+				if (ApiData.CLASSES.equalsIgnoreCase(requestName)) {
+					if (ApiData.GET.equalsIgnoreCase(method)) {
+						List<Clas> classes = (List<Clas>) apiResponse.getData();
+						ClassesFragment cf = (ClassesFragment) pagerAdapter.findFragmentByPosition(0);
+						cf.setClasses(classes);
+					} else if (ApiData.POST.equalsIgnoreCase(method)) {
+						requestClasses();
+					} else if (ApiData.DELETE.equalsIgnoreCase(method)) {
+						requestClasses();
+					}
+				}
+			} else {
+				showInfoDialog(getString(R.string.error), apiResponse.getError());
+			}
+		} else {
+			showInfoDialog(getString(R.string.error), apiResponse.getError());
+		}
 	}
 
 }

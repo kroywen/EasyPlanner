@@ -1,12 +1,15 @@
 package com.thepegeekapps.easyplanner.dialog;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -33,6 +36,8 @@ public class InputDialog extends DialogFragment implements OnClickListener {
 	private String cancelText;
 	private OnInputClickListener listener;
 	
+	private View rootView;
+	
 	public void setTitle(String title) {
 		this.title = title;
 	}
@@ -51,16 +56,17 @@ public class InputDialog extends DialogFragment implements OnClickListener {
 		this.listener = listener;
 	}
 	
+	@SuppressLint("InflateParams")
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		LayoutInflater inflater = getActivity().getLayoutInflater();
-		View view = inflater.inflate(R.layout.input_dialog, null);
-	    initializeViews(view);
+		rootView = inflater.inflate(R.layout.input_dialog, null);
+	    initializeViews(rootView);
 		
 	    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 	    builder.setInverseBackgroundForced(true);
 	    AlertDialog dialog = builder.create();
-	    dialog.setView(view, 0, 0, 0, 0);
+	    dialog.setView(rootView, 0, 0, 0, 0);
 	    
 	    return dialog;
 	}
@@ -96,6 +102,15 @@ public class InputDialog extends DialogFragment implements OnClickListener {
 			break;
 		}
 		dismiss();
+	}
+	
+	public void hideSoftKeyborad() {
+		View view = rootView.findFocus();
+		if (view == null) {
+			return;
+		}
+		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 	}
 
 }

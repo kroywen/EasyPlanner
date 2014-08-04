@@ -1,8 +1,10 @@
 package com.thepegeekapps.easyplanner.fragment;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,7 +22,6 @@ import com.thepegeekapps.easyplanner.model.Clas;
 import com.thepegeekapps.easyplanner.screen.ClassScreen;
 import com.thepegeekapps.easyplanner.screen.MainScreen;
 import com.thepegeekapps.easyplanner.storage.db.DatabaseHelper;
-import com.thepegeekapps.easyplanner.storage.db.DatabaseStorage;
 import com.thepegeekapps.easyplanner.util.Utilities;
 
 public class ClassesFragment extends Fragment implements OnItemClickListener {
@@ -29,7 +30,6 @@ public class ClassesFragment extends Fragment implements OnItemClickListener {
 	private ListView classesList;
 	
 	private List<Clas> classes;
-	private DatabaseStorage dbStorage;
 	private ClassAdapter adapter;
 	private int timeSelected;
 	
@@ -44,10 +44,10 @@ public class ClassesFragment extends Fragment implements OnItemClickListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		dbStorage = new DatabaseStorage(getActivity());
 		timeSelected = (getArguments() != null) ? getArguments().getInt("time") : 0;
 	}
 	
+	@SuppressLint("InflateParams")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.classes_fragment, null);
@@ -63,25 +63,34 @@ public class ClassesFragment extends Fragment implements OnItemClickListener {
 	}
 	
 	public void updateViews() {
-		String selection = null;
-		if (timeSelected == MainScreen.TIME_TODAY) {
-			Calendar calendar = Calendar.getInstance(); 
-			long dayStart = Utilities.getDayStart(calendar.getTimeInMillis());
-			long dayEnd = Utilities.getDayEnd(calendar.getTimeInMillis());
-			selection = DatabaseHelper.FIELD_TIME + " > " + dayStart + " AND " +
-				DatabaseHelper.FIELD_TIME + " < " + dayEnd;
-		}
-		classes = dbStorage.getClasses(selection);
+		List<Clas> filtered = (timeSelected == MainScreen.TIME_TODAY) ?
+			getTodayClasses() : classes;
 		
-		if (Utilities.isEmpty(classes)) {
+		if (Utilities.isEmpty(filtered)) {
 			emptyView.setVisibility(View.VISIBLE);
 			classesList.setVisibility(View.INVISIBLE);
 		} else {
 			emptyView.setVisibility(View.INVISIBLE);
 			classesList.setVisibility(View.VISIBLE);
-			adapter = new ClassAdapter(this, classes);
+			adapter = new ClassAdapter(this, filtered);
 			classesList.setAdapter(adapter);
 		}
+	}
+	
+	private List<Clas> getTodayClasses() {
+		Calendar calendar = Calendar.getInstance(); 
+		long dayStart = Utilities.getDayStart(calendar.getTimeInMillis());
+		long dayEnd = Utilities.getDayEnd(calendar.getTimeInMillis());
+		List<Clas> filtered = null;
+		if (!Utilities.isEmpty(classes)) {
+			filtered = new ArrayList<Clas>();
+			for (Clas clas : classes) {
+				if (clas.getTime() > dayStart && clas.getTime() < dayEnd) {
+					filtered.add(clas);
+				}
+			}
+		}
+		return filtered;
 	}
 	
 	public void deleteClass(final Clas clas) {
@@ -91,9 +100,9 @@ public class ClassesFragment extends Fragment implements OnItemClickListener {
 		dialog.setOkListener(getString(R.string.delete), new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				dbStorage.deleteClas(clas);
-				updateViews();
 				dialog.dismiss();
+				((MainScreen) getActivity()).tryDeleteClass(clas);
+				
 			}
 		});
 		dialog.setCancelListener(getString(R.string.cancel), new View.OnClickListener() {
@@ -108,14 +117,20 @@ public class ClassesFragment extends Fragment implements OnItemClickListener {
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		long classId = adapter.getItemId(position);
+		Clas clas = adapter.getItem(position);
 		Intent intent = new Intent(getActivity(), ClassScreen.class);
-		intent.putExtra(DatabaseHelper.FIELD_ID, classId);
+		intent.putExtra(DatabaseHelper.FIELD_ID, clas.getId());
+		intent.putExtra(DatabaseHelper.FIELD_NAME, clas.getName());
 		startActivity(intent);
 	}
 	
 	public void setTimeSelected(int timeSelected) {
 		this.timeSelected = timeSelected;
+		updateViews();
+	}
+	
+	public void setClasses(List<Clas> classes) {
+		this.classes = classes;
 		updateViews();
 	}
 

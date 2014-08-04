@@ -1,5 +1,6 @@
 package com.thepegeekapps.easyplanner.screen;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
@@ -34,6 +35,14 @@ public class MenuScreen extends FragmentActivity {
 
 	public SlideoutHelper getSlideoutHelper(){
 		return mSlideoutHelper;
+	}
+	
+	public void setLogout(boolean logout) {
+		if (logout) {
+			Intent intent = new Intent();
+			intent.putExtra("logout", logout);
+			setResult(RESULT_OK, intent);
+		}
 	}
 
 }

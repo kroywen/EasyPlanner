@@ -23,18 +23,18 @@ public class DaysListAdapter extends BaseAdapter {
 	
 	private Context context;
 	private long[][] items;
+	private List<List<Activiti>> activities;
 	private long time;
 	private String[] daysOfWeek;
 	private long classId;
-	private DatabaseStorage dbStorage;
 	
-	public DaysListAdapter(Context context, long[][] items, long time, long classId) {
+	public DaysListAdapter(Context context, List<Activiti> list, long[][] items, long time, long classId) {
 		this.context = context;
 		this.items = items;
 		this.time = Utilities.timeToMidnight(time).getTimeInMillis();
 		this.classId = classId;
 		daysOfWeek = context.getResources().getStringArray(R.array.days_of_week);	
-		dbStorage = new DatabaseStorage(context);
+		generateActivitiyList(list);
 	}
 
 	@Override
@@ -90,41 +90,48 @@ public class DaysListAdapter extends BaseAdapter {
 		}
 		
 		LinearLayout activitiesContent = (LinearLayout) convertView.findViewById(R.id.activitiesContent);
-		List<Activiti> activities = getActivities(times);
-		if (Utilities.isEmpty(activities)) {
-			activitiesContent.setVisibility(View.GONE);
+		
+		if (!Utilities.isEmpty(this.activities)) {
+			List<Activiti> activities = this.activities.get(position);
+			if (Utilities.isEmpty(activities)) {
+				activitiesContent.setVisibility(View.GONE);
+			} else {
+				populateActivitiesContent(activitiesContent, activities);
+				activitiesContent.setVisibility(View.VISIBLE);
+			}
 		} else {
-			populateActivitiesContent(activitiesContent, activities);
-			activitiesContent.setVisibility(View.VISIBLE);
-		}
+			activitiesContent.setVisibility(View.GONE);
+		}		
 		
 		return convertView;
 	}
 	
-	private List<Activiti> getActivities(long[] times) {
-		List<Activiti> activities = new ArrayList<Activiti>();
-		if (times[0] != 0) {
-			List<Activiti> activities1 = getActivities(times[0]);
-			if (!Utilities.isEmpty(activities1)) {
-				activities.addAll(activities1);
-			}
+	private void generateActivitiyList(List<Activiti> list) {
+		if (Utilities.isEmpty(list)) {
+			return;
 		}
-		if (times[1] != 0) {
-			List<Activiti> activities2 = getActivities(times[1]);
-			if (!Utilities.isEmpty(activities2)) {
-				activities.addAll(activities2);
+		activities = new ArrayList<List<Activiti>>();
+		for (long[] item : items) {
+			List<Activiti> l = getActivities(item[0], list);
+			if (item[1] != 0) {
+				List<Activiti> l1 = getActivities(item[1], list);
+				l.addAll(l1);
 			}
+			activities.add(l);
 		}
-		return activities;
 	}
 	
-	private List<Activiti> getActivities(long time) {
-		long dayStart = Utilities.getDayStart(time);
-		long dayEnd = Utilities.getDayEnd(time);
-		String selection = DatabaseHelper.FIELD_CLASS_ID + "=" + classId + " AND " +
-				DatabaseHelper.FIELD_TIME + " > " + dayStart + " AND " +
-				DatabaseHelper.FIELD_TIME + " < " + dayEnd;
-		List<Activiti> activities = dbStorage.getActivities(selection);
+	private List<Activiti> getActivities(long time, List<Activiti> list) {
+		List<Activiti> activities = new ArrayList<Activiti>();
+		if (!Utilities.isEmpty(list)) {
+			long dayStart = Utilities.getDayStart(time);
+			long dayEnd = Utilities.getDayEnd(time);
+			for (Activiti activity : list) {
+				if (activity.getTime() >= dayStart && activity.getTime() <= dayEnd) {
+					activities.add(activity);
+				}
+			}
+		}
 		return activities;
 	}
 	

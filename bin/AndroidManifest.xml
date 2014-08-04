@@ -6,8 +6,16 @@
     android:installLocation="auto">
 
     <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="17" />
+        android:minSdkVersion="10"
+        android:targetSdkVersion="19" />
+    
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    
+    <uses-feature 
+        android:name="android.hardware.camera"
+		android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -25,6 +33,10 @@
         </activity>
         
         <activity
+            android:name=".screen.LoginScreen"
+            android:screenOrientation="portrait" />
+        
+        <activity
             android:name=".screen.MainScreen"
             android:screenOrientation="portrait" />
         
@@ -35,6 +47,46 @@
         <activity
             android:name=".screen.ClassScreen"
             android:screenOrientation="portrait" />
+        
+        <activity
+            android:name=".screen.GetLinkScreen"
+            android:screenOrientation="portrait" />
+        
+        <activity
+            android:name=".screen.AddResourceScreen"
+            android:screenOrientation="portrait" 
+            android:theme="@style/CustomDialog" />
+        
+        <activity
+            android:name=".screen.BrowseDropboxScreen"
+            android:screenOrientation="portrait" />
+        
+        <activity
+            android:name=".screen.BrowseGoogleDriveScreen"
+            android:screenOrientation="portrait" />
+        
+        <activity
+            android:name=".screen.BrowseOneDriveScreen"
+            android:screenOrientation="portrait" />
+        
+        <service
+            android:name=".api.ApiService" />
+        
+        <activity
+            android:name="com.dropbox.client2.android.AuthActivity"
+			android:launchMode="singleTask"
+			android:configChanges="orientation|keyboard">
+	  		<intent-filter>
+				<data android:scheme="db-6gvxz6b3fzsvpqt" />
+				<!-- <data android:scheme="db-wvqp76ja510wtiv" /> -->
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.BROWSABLE"/>
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
+		
+        <meta-data android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
     </application>
 

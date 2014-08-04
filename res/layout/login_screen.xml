@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:background="#448edb">
+    
+    <LinearLayout 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
+        
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/login_logo" />
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:text="@string/login_to_get_started" />
+        
+        <EditText 
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:textColor="#448edb"
+            android:background="@drawable/edittext_background"
+            android:inputType="textEmailAddress"
+            android:maxLines="1"
+            android:hint="@string/email"
+            android:text="swd.levi@gmail.com" />
+        
+        <EditText 
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:textColor="#448edb"
+            android:background="@drawable/edittext_background"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            android:hint="@string/password"
+            android:text="asd" />
+        
+        <Button
+            android:id="@+id/loginBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/login_btn_background"
+            android:textColor="@color/login_btn_text_color"
+            android:text="@android:string/ok" />
+        
+    </LinearLayout>
+
+</RelativeLayout>

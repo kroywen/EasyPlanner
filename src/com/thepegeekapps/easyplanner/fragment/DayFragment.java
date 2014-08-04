@@ -3,10 +3,11 @@ package com.thepegeekapps.easyplanner.fragment;
 import java.util.Calendar;
 import java.util.List;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,20 +20,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thepegeekapps.easyplanner.R;
+import com.thepegeekapps.easyplanner.api.ApiData;
+import com.thepegeekapps.easyplanner.api.ApiResponse;
+import com.thepegeekapps.easyplanner.api.ApiService;
 import com.thepegeekapps.easyplanner.dialog.ConfirmationDialog;
 import com.thepegeekapps.easyplanner.dialog.InputDialog;
 import com.thepegeekapps.easyplanner.dialog.InputDialog.OnInputClickListener;
 import com.thepegeekapps.easyplanner.model.Activiti;
 import com.thepegeekapps.easyplanner.model.Homework;
 import com.thepegeekapps.easyplanner.model.Task;
+import com.thepegeekapps.easyplanner.screen.AddResourceScreen;
+import com.thepegeekapps.easyplanner.screen.BaseScreen;
 import com.thepegeekapps.easyplanner.screen.ClassScreen;
 import com.thepegeekapps.easyplanner.storage.db.DatabaseHelper;
-import com.thepegeekapps.easyplanner.storage.db.DatabaseStorage;
 import com.thepegeekapps.easyplanner.ui.view.DateView;
 import com.thepegeekapps.easyplanner.ui.view.DateView.OnDateChangedListener;
 import com.thepegeekapps.easyplanner.util.Utilities;
 
-public class DayFragment extends Fragment implements OnDateChangedListener, OnClickListener {
+public class DayFragment extends ClassFragment implements OnDateChangedListener, OnClickListener {
 	
 	private DateView dateView;
 	
@@ -55,15 +60,10 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 	private LinearLayout tasksContent;
 	private TextView tasksEmptyView;
 	
-	private DatabaseStorage dbStorage;
-	private long classId;
 	private String[] daysOfWeek;
 	private List<Activiti> activities;
 	private List<Homework> homeworks;
 	private List<Task> tasks;
-	
-	private OnDataChangeListener dataListener;
-	private OnTimeSelectListener timeListener;
 	
 	public static DayFragment newInstance(long classId) {
 		DayFragment f = new DayFragment();
@@ -76,27 +76,15 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		dbStorage = new DatabaseStorage(getActivity());
-		classId = (getArguments() != null) ? getArguments().getLong(DatabaseHelper.FIELD_ID) : 0;
 		daysOfWeek = getResources().getStringArray(R.array.days_of_week);
 	}
 	
+	@SuppressLint("InflateParams")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.day_fragment, null);
 		initializeViews(view);
 		return view;
-	}
-	
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		try {
-			dataListener = (OnDataChangeListener) activity;
-			timeListener = (OnTimeSelectListener) activity;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 	
 	@Override
@@ -135,9 +123,9 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 	
 	public void updateViews() {
 		updateCurrentDay();
-		updateActivities();
-		updateHomeworks();
-		updateTasks();
+		requestActivities();
+		requestHomeworks();
+		requestTasks();
 	}
 	
 	private void updateCurrentDay() {
@@ -147,13 +135,21 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 		currentDayView.setText(daysOfWeek[calendar.get(Calendar.DAY_OF_WEEK)]);
 	}
 	
+	private void requestActivities() {
+		long dayStart = Utilities.getDayStart(getTime()) / 1000;
+		long dayEnd = Utilities.getDayEnd(getTime()) / 1000;
+		
+		Intent intent = new Intent(getActivity(), ApiService.class);
+		intent.setData(Uri.parse(ApiData.ACTIVITY));
+		intent.setAction(ApiData.GET);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		intent.putExtra(ApiData.PARAM_CLASS_ID, classId);
+		intent.putExtra(ApiData.PARAM_DATE_START, dayStart);
+		intent.putExtra(ApiData.PARAM_DATE_END, dayEnd);
+		getActivity().startService(intent);
+	}
+	
 	private void updateActivities() {
-		long dayStart = Utilities.getDayStart(getTime());
-		long dayEnd = Utilities.getDayEnd(getTime());
-		String selection = DatabaseHelper.FIELD_CLASS_ID + "=" + classId + " AND " +
-				DatabaseHelper.FIELD_TIME + " > " + dayStart + " AND " +
-				DatabaseHelper.FIELD_TIME + " < " + dayEnd;
-		activities = dbStorage.getActivities(selection);
 		if (Utilities.isEmpty(activities)) {
 			activitiesEmptyView.setVisibility(View.VISIBLE);
 			activitiesContent.setVisibility(View.GONE);
@@ -164,6 +160,7 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 		}
 	}
 	
+	@SuppressLint("InflateParams")
 	private void populateActivitiesContent(List<Activiti> activities) {
 		activitiesContent.removeAllViews();
 		LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -186,6 +183,38 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 		}
 	}
 	
+	private void showAddActivityDialog() {
+		InputDialog dialog = new InputDialog();
+		dialog.setTitle(getString(R.string.information));
+		dialog.setText(getString(R.string.describe_activity));
+		dialog.setHint(getString(R.string.activity));
+		dialog.setButtons(getString(R.string.add), getString(R.string.cancel), new OnInputClickListener() {
+			@Override
+			public void onInputOkClick(String inputText) {
+				if (TextUtils.isEmpty(inputText)) {
+					Toast.makeText(getActivity(), R.string.describe_activity, Toast.LENGTH_SHORT).show();
+				} else {
+					requestAddActivity(inputText);
+				}
+			}
+			@Override
+			public void onInputCancelClick() {}
+		});
+		dialog.show(getChildFragmentManager(), "AddActivityDialog");
+	}
+	
+	private void requestAddActivity(String description) {
+		Intent intent = new Intent(getActivity(), ApiService.class);
+		intent.setData(Uri.parse(ApiData.ACTIVITY));
+		intent.setAction(ApiData.POST);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		intent.putExtra(ApiData.PARAM_CLASS_ID, classId);
+		intent.putExtra(ApiData.PARAM_TEXT, description);
+		intent.putExtra(ApiData.PARAM_DATE, Utilities.parseTime(dateView.getSelectedTime(), Utilities.dd_MM_yyyy));
+		getActivity().startService(intent);
+		showProgressDialog(R.string.adding_activity);
+	}
+	
 	private void showDeleteActivityDialog(final Activiti activity) {
 		final ConfirmationDialog dialog = new ConfirmationDialog();
 		dialog.setTitle(getString(R.string.information));
@@ -193,12 +222,8 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 		dialog.setOkListener(getString(R.string.delete), new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				dbStorage.deleteActivity(activity);
-				updateActivities();
+				requestDeleteActivity(activity);
 				dialog.dismiss();
-				if (dataListener != null) {
-					dataListener.onDataChanged();
-				}
 			}
 		});
 		dialog.setCancelListener(getString(R.string.cancel), new View.OnClickListener() {
@@ -211,13 +236,32 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 		dialog.show(getChildFragmentManager(), "DeleteActivityDialog");
 	}
 	
+	private void requestDeleteActivity(Activiti activity) {
+		Intent intent = new Intent(getActivity(), ApiService.class);
+		intent.setData(Uri.parse(ApiData.ACTIVITY));
+		intent.setAction(ApiData.DELETE);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		intent.putExtra(ApiData.PARAM_CLASS_ID, classId);
+		intent.putExtra(ApiData.PARAM_ACTIVITY_ID, activity.getId());
+		getActivity().startService(intent);
+		((BaseScreen) getActivity()).showProgressDialog(R.string.deleting_activity);
+	}
+	
+	private void requestHomeworks() {
+		long dayStart = Utilities.getDayStart(getTime()) / 1000;
+		long dayEnd = Utilities.getDayEnd(getTime()) / 1000;
+		
+		Intent intent = new Intent(getActivity(), ApiService.class);
+		intent.setData(Uri.parse(ApiData.HOMEWORK));
+		intent.setAction(ApiData.GET);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		intent.putExtra(ApiData.PARAM_CLASS_ID, classId);
+		intent.putExtra(ApiData.PARAM_DATE_START, dayStart);
+		intent.putExtra(ApiData.PARAM_DATE_END, dayEnd);
+		getActivity().startService(intent);
+	}
+	
 	private void updateHomeworks() {
-		long dayStart = Utilities.getDayStart(getTime());
-		long dayEnd = Utilities.getDayEnd(getTime());
-		String selection = DatabaseHelper.FIELD_CLASS_ID + "=" + classId + " AND " +
-				DatabaseHelper.FIELD_TIME + " > " + dayStart + " AND " +
-				DatabaseHelper.FIELD_TIME + " < " + dayEnd;
-		homeworks = dbStorage.getHomeworks(selection);
 		if (Utilities.isEmpty(homeworks)) {
 			homeworksEmptyView.setVisibility(View.VISIBLE);
 			homeworksContent.setVisibility(View.GONE);
@@ -228,6 +272,7 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 		}
 	}
 	
+	@SuppressLint("InflateParams")
 	private void populateHomeworksContent(List<Homework> homeworks) {
 		homeworksContent.removeAllViews();
 		LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -257,8 +302,7 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 		dialog.setOkListener(getString(R.string.delete), new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				dbStorage.deleteHomework(homework);
-				updateHomeworks();
+				requestDeleteHomework(homework);
 				dialog.dismiss();
 			}
 		});
@@ -272,13 +316,64 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 		dialog.show(getChildFragmentManager(), "DeleteHomeworkDialog");
 	}
 	
+	private void requestDeleteHomework(Homework homework) {
+		Intent intent = new Intent(getActivity(), ApiService.class);
+		intent.setData(Uri.parse(ApiData.HOMEWORK));
+		intent.setAction(ApiData.DELETE);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		intent.putExtra(ApiData.PARAM_CLASS_ID, classId);
+		intent.putExtra(ApiData.PARAM_HOMEWORK_ID, homework.getId());
+		getActivity().startService(intent);
+		showProgressDialog(R.string.deleting_homework);
+	}
+	
+	private void showAddHomeworkDialog() {
+		InputDialog dialog = new InputDialog();
+		dialog.setTitle(getString(R.string.information));
+		dialog.setText(getString(R.string.describe_homework));
+		dialog.setHint(getString(R.string.homework));
+		dialog.setButtons(getString(R.string.add), getString(R.string.cancel), new OnInputClickListener() {
+			@Override
+			public void onInputOkClick(String inputText) {
+				if (TextUtils.isEmpty(inputText)) {
+					Toast.makeText(getActivity(), R.string.describe_homework, Toast.LENGTH_SHORT).show();
+				} else {
+					requestAddHomework(inputText);
+				}
+			}
+			@Override
+			public void onInputCancelClick() {}
+		});
+		dialog.show(getChildFragmentManager(), "AddHomeworkDialog");
+	}
+	
+	private void requestAddHomework(String description) {
+		Intent intent = new Intent(getActivity(), ApiService.class);
+		intent.setData(Uri.parse(ApiData.HOMEWORK));
+		intent.setAction(ApiData.POST);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		intent.putExtra(ApiData.PARAM_CLASS_ID, classId);
+		intent.putExtra(ApiData.PARAM_TEXT, description);
+		intent.putExtra(ApiData.PARAM_DATE, Utilities.parseTime(dateView.getSelectedTime(), Utilities.dd_MM_yyyy));
+		getActivity().startService(intent);
+		showProgressDialog(R.string.adding_homework);
+	}
+	
+	private void requestTasks() {
+		long dayStart = Utilities.getDayStart(getTime()) / 1000;
+		long dayEnd = Utilities.getDayEnd(getTime()) / 1000;
+		
+		Intent intent = new Intent(getActivity(), ApiService.class);
+		intent.setData(Uri.parse(ApiData.TASK));
+		intent.setAction(ApiData.GET);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		intent.putExtra(ApiData.PARAM_CLASS_ID, classId);
+		intent.putExtra(ApiData.PARAM_DATE_START, dayStart);
+		intent.putExtra(ApiData.PARAM_DATE_END, dayEnd);
+		getActivity().startService(intent);
+	}
+	
 	private void updateTasks() {
-		long dayStart = Utilities.getDayStart(getTime());
-		long dayEnd = Utilities.getDayEnd(getTime());
-		String selection = DatabaseHelper.FIELD_CLASS_ID + "=" + classId + " AND " +
-				DatabaseHelper.FIELD_TIME + " > " + dayStart + " AND " +
-				DatabaseHelper.FIELD_TIME + " < " + dayEnd;
-		tasks = dbStorage.getTasks(selection);
 		if (Utilities.isEmpty(tasks)) {
 			tasksEmptyView.setVisibility(View.VISIBLE);
 			tasksContent.setVisibility(View.GONE);
@@ -289,6 +384,7 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 		}
 	}
 	
+	@SuppressLint("InflateParams")
 	private void populateTasksContent(List<Task> tasks) {
 		tasksContent.removeAllViews();
 		LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -306,9 +402,7 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 				completedCb.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						task.setCompleted(!task.isCompleted());
-						dbStorage.updateTask(task);
-						updateTasks();
+						requestMarkTask(task, !task.isCompleted(), true);
 					}
 				});
 			}
@@ -347,12 +441,10 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 						@Override
 						public void onClick(View v) {
 							subtask.setCompleted(!subtask.isCompleted());
-							dbStorage.updateTask(subtask);
+							requestMarkTask(subtask, subtask.isCompleted(), true);
 							
 							task.setCompleted(task.areSubtasksCompleted());
-							dbStorage.updateTask(task);
-							
-							updateTasks();
+							requestMarkTask(task, task.isCompleted(), false);
 						}
 					});
 					
@@ -370,6 +462,20 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 		}
 	}
 	
+	private void requestMarkTask(Task task, boolean completed, boolean showProgress) {
+		Intent intent = new Intent(getActivity(), ApiService.class);
+		intent.setData(Uri.parse(ApiData.TASK));
+		intent.setAction(ApiData.PUT);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		intent.putExtra(ApiData.PARAM_CLASS_ID, classId);
+		intent.putExtra(ApiData.PARAM_TASK_ID, task.getId());
+		intent.putExtra(ApiData.PARAM_COMPLETED, completed ? "yes" : "no");
+		getActivity().startService(intent);
+		if (showProgress) {
+			showProgressDialog(R.string.changing_task_status);
+		}
+	}
+	
 	private void showDeleteTaskDialog(final Task task) {
 		final ConfirmationDialog dialog = new ConfirmationDialog();
 		dialog.setTitle(getString(R.string.information));
@@ -377,8 +483,7 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 		dialog.setOkListener(getString(R.string.delete), new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				dbStorage.deleteTask(task);
-				updateTasks();
+				requestDeleteTask(task);
 				dialog.dismiss();
 			}
 		});
@@ -391,76 +496,16 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 		
 		dialog.show(getChildFragmentManager(), "DeleteTaskDialog");
 	}
-
-	@Override
-	public void onDateChanged(long time) {
-		setTime(time);
-		updateViews();
-		if (timeListener != null) {
-			timeListener.onTimeSelected(0, time);
-		}
-	}
-
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.addActivityBtn:
-			showAddActivityDialog();
-			break;
-		case R.id.addHomeworkBtn:
-			showAddHomeworkDialog();
-			break;
-		case R.id.addTaskBtn:
-			showAddTaskDialog(0);
-			break;
-		}
-	}
 	
-	private void showAddActivityDialog() {
-		InputDialog dialog = new InputDialog();
-		dialog.setTitle(getString(R.string.information));
-		dialog.setText(getString(R.string.describe_activity));
-		dialog.setHint(getString(R.string.activity));
-		dialog.setButtons(getString(R.string.add), getString(R.string.cancel), new OnInputClickListener() {
-			@Override
-			public void onInputOkClick(String inputText) {
-				if (TextUtils.isEmpty(inputText)) {
-					Toast.makeText(getActivity(), R.string.describe_activity, Toast.LENGTH_SHORT).show();
-				} else {
-					Activiti activity = new Activiti(0, classId, inputText, dateView.getSelectedTime());
-					dbStorage.addActivity(activity);
-					updateActivities();
-					if (dataListener != null) {
-						dataListener.onDataChanged();
-					}
-				}
-			}
-			@Override
-			public void onInputCancelClick() {}
-		});
-		dialog.show(getChildFragmentManager(), "add_activity");
-	}
-	
-	private void showAddHomeworkDialog() {
-		InputDialog dialog = new InputDialog();
-		dialog.setTitle(getString(R.string.information));
-		dialog.setText(getString(R.string.describe_homework));
-		dialog.setHint(getString(R.string.homework));
-		dialog.setButtons(getString(R.string.add), getString(R.string.cancel), new OnInputClickListener() {
-			@Override
-			public void onInputOkClick(String inputText) {
-				if (TextUtils.isEmpty(inputText)) {
-					Toast.makeText(getActivity(), R.string.describe_homework, Toast.LENGTH_SHORT).show();
-				} else {
-					Homework homework = new Homework(0, classId, inputText, dateView.getSelectedTime());
-					dbStorage.addHomework(homework);
-					updateHomeworks();
-				}
-			}
-			@Override
-			public void onInputCancelClick() {}
-		});
-		dialog.show(getChildFragmentManager(), "add_homework");
+	private void requestDeleteTask(Task task) {
+		Intent intent = new Intent(getActivity(), ApiService.class);
+		intent.setData(Uri.parse(ApiData.TASK));
+		intent.setAction(ApiData.DELETE);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		intent.putExtra(ApiData.PARAM_CLASS_ID, classId);
+		intent.putExtra(ApiData.PARAM_TASK_ID, task.getId());
+		getActivity().startService(intent);
+		showProgressDialog(R.string.deleting_task);
 	}
 	
 	private void showAddTaskDialog(final long parentId) {
@@ -474,15 +519,59 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 				if (TextUtils.isEmpty(inputText)) {
 					Toast.makeText(getActivity(), R.string.describe_task, Toast.LENGTH_SHORT).show();
 				} else {
-					Task task = new Task(0, classId, parentId, inputText, dateView.getSelectedTime(), false);
-					dbStorage.addTask(task);
-					updateTasks();
+					requestAddTask(inputText, parentId);
 				}
 			}
 			@Override
 			public void onInputCancelClick() {}
 		});
-		dialog.show(getChildFragmentManager(), "add_task");	
+		dialog.show(getChildFragmentManager(), "AddTaskDialog");	
+	}
+	
+	private void requestAddTask(String description, long parentId) {
+		Intent intent = new Intent(getActivity(), ApiService.class);
+		intent.setData(Uri.parse(ApiData.TASK));
+		intent.setAction(ApiData.POST);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		intent.putExtra(ApiData.PARAM_CLASS_ID, classId);
+		intent.putExtra(ApiData.PARAM_TEXT, description);
+		intent.putExtra(ApiData.PARAM_DATE, Utilities.parseTime(dateView.getSelectedTime(), Utilities.dd_MM_yyyy));
+		if (parentId != 0) {
+			intent.putExtra(ApiData.PARAM_PARENT_ID, parentId);
+		}
+		getActivity().startService(intent);
+		showProgressDialog(R.string.adding_task);
+	}
+
+	@Override
+	public void onDateChanged(long time) {
+		setTime(time);
+		updateViews();
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.addActivityBtn:
+			showAddActivityDialog();
+			break;
+		case R.id.addMediaBtn:
+			showAddResourcesDialog();
+			break;
+		case R.id.addHomeworkBtn:
+			showAddHomeworkDialog();
+			break;
+		case R.id.addTaskBtn:
+			showAddTaskDialog(0);
+			break;
+		}
+	}
+	
+	private void showAddResourcesDialog() {
+		Intent intent = new Intent(getActivity(), AddResourceScreen.class);
+		intent.putExtra(ApiData.PARAM_CLASS_ID, classId);
+		intent.putExtra(ApiData.PARAM_DATE, getTime());
+		startActivity(intent);
 	}
 	
 	public void setCurrentTime(long time) {
@@ -498,6 +587,45 @@ public class DayFragment extends Fragment implements OnDateChangedListener, OnCl
 	
 	public void setTime(long time) {
 		((ClassScreen) getActivity()).setTime(time);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public void onApiResponse(int apiStatus, ApiResponse apiResponse) {
+		((BaseScreen) getActivity()).hideProgressDialog();
+		if (apiStatus == ApiService.API_STATUS_SUCCESS) {
+			int status = apiResponse.getStatus();
+			String requestName = apiResponse.getRequestName();
+			String method = apiResponse.getMethod();
+			if (status == ApiResponse.STATUS_SUCCESS) {
+				if (ApiData.ACTIVITY.equalsIgnoreCase(requestName)) {
+					if (ApiData.GET.equalsIgnoreCase(method)) {
+						activities = (List<Activiti>) apiResponse.getData();
+						updateActivities();
+					} else if (ApiData.DELETE.equalsIgnoreCase(method) ||
+						ApiData.POST.equalsIgnoreCase(method)) 
+					{
+						requestActivities();
+					}
+				} else if (ApiData.HOMEWORK.equalsIgnoreCase(requestName)) {
+					if (ApiData.GET.equalsIgnoreCase(method)) {
+						homeworks = (List<Homework>) apiResponse.getData();
+						updateHomeworks();
+					} else if (ApiData.DELETE.equalsIgnoreCase(method) ||
+						ApiData.POST.equalsIgnoreCase(method))
+					{
+						requestHomeworks();
+					}
+				} else if (ApiData.TASK.equalsIgnoreCase(requestName)) {
+					if (ApiData.GET.equalsIgnoreCase(method)) {
+						tasks = (List<Task>) apiResponse.getData();
+						updateTasks();
+					} else {
+						requestTasks();
+					}
+				}
+			}
+		}
 	}
 
 }

@@ -1,5 +1,11 @@
 package com.thepegeekapps.easyplanner.util;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
@@ -7,11 +13,23 @@ import java.util.Date;
 import java.util.Locale;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.text.TextUtils;
 
 public class Utilities {
 	
 	public static final long INTERVAL_DAY = 24 * 60 * 60 * 1000;
 	public static final String EEE_dd_LLL_yyyy = "EEE dd LLL yyyy";
+	public static final String EEE_dd_LLL_yyyy_kk_mm_ss_Z = "EEE, dd LLL yyyy kk:mm:ss Z";
+	public static final String dd_MM_yyyy = "dd-MM-yyyy";
+
+	public static boolean isConnectionAvailable(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo info = cm.getActiveNetworkInfo();
+		return info != null && info.isConnected();
+	}
 	
 	public static long getDayStart(long time) {
 		Calendar c = Calendar.getInstance();
@@ -70,6 +88,13 @@ public class Utilities {
 		return sdf.format(new Date(time));
 	}
 	
+	public static long parseTime(String time, String pattern) 
+		throws ParseException 
+	{
+		SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.US);
+		return sdf.parse(time).getTime();
+	}
+	
 	public static long[][] generateWeekItems(long time) {
 		Calendar c = timeToMidnight(time);
 		while (c.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
@@ -120,6 +145,76 @@ public class Utilities {
 	
 	public static String addLeadingZero(int day) {
 		return (day / 10 == 0) ? "0" + day : String.valueOf(day);
+	}
+	
+	public static String streamToString(InputStream is) {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+	    StringBuilder sb = new StringBuilder();
+
+	    String line = null;
+	    try {
+	        while ((line = reader.readLine()) != null) {
+	            sb.append(line + "\n");
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            is.close();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    return sb.toString();
+	}
+	
+	public static final String getReadableFilesize(long bytes) {
+		String s = " B";
+		String size = bytes + s;
+		
+		while (bytes > 1024) {
+			if (s.equals(" B"))	s = " KB";
+			else if (s.equals(" KB")) s = " MB";
+			else if (s.equals(" MB")) s = " GB";
+			else if (s.equals(" GB")) s = " TB";
+			
+			size = (bytes / 1024) + "." + (bytes % 1024) + s;
+			bytes = bytes / 1024;
+		}
+		
+		return size;
+	}
+	
+	public static String extractFilename(String path) {
+		if (TextUtils.isEmpty(path)) {
+			return "";
+		}
+		int start = path.lastIndexOf('/');
+		if (start == -1) {
+			return path;
+		}
+		return path.substring(start+1);
+	}
+	
+	public static boolean copyStream(InputStream is, OutputStream os) {
+		try {
+			byte [] buffer = new byte[256];
+			int bytesRead = 0;
+			while((bytesRead = is.read(buffer)) != -1) {
+			    os.write(buffer, 0, bytesRead);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			try {
+				is.close();
+				os.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return true;
 	}
 
 }
