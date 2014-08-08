@@ -1,14 +1,26 @@
 package com.thepegeekapps.easyplanner.fragment;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +32,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.dropbox.client2.RESTUtility.RequestMethod;
 import com.thepegeekapps.easyplanner.R;
 import com.thepegeekapps.easyplanner.api.ApiData;
 import com.thepegeekapps.easyplanner.api.ApiResponse;
@@ -174,6 +185,7 @@ public class DayFragment extends ClassFragment implements OnDateChangedListener,
 		for (int i=0; i<activities.size(); i++) {
 			final Activiti activity = activities.get(i);
 			View view = inflater.inflate(R.layout.activity_list_item, null);
+			view.setBackgroundResource(R.drawable.list_item_selector);
 			
 			TextView description = (TextView) view.findViewById(R.id.description);
 			description.setText(activity.getDescription());
@@ -279,12 +291,37 @@ public class DayFragment extends ClassFragment implements OnDateChangedListener,
 		}
 	}
 	
+	@SuppressLint("InflateParams")
 	private void populateResourcesContent(List<Resource> resources) {
 		mediaContent.removeAllViews();
 		LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		for (int i=0; i<resources.size(); i++) {
 			final Resource resource = resources.get(i);
 			View view = inflater.inflate(R.layout.activity_list_item, null);
+			view.setBackgroundResource(R.drawable.list_item_selector);
+			view.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (resource.isUrl()) {
+						Intent intent = new Intent(Intent.ACTION_VIEW);
+						intent.setData(Uri.parse(resource.getUrl()));
+						startActivity(intent);
+					} else if (resource.isFile()) {
+						File docDir = new File(Environment.getExternalStorageDirectory() + "/easyplanner/");
+						docDir.mkdirs();
+						File file = new File(docDir, resource.getTitle());
+						if (file.exists()) {
+							try {
+								openFile(file);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						} else {
+							new DownloadResourceTask(resource).execute();
+						}
+					}
+				}
+			});
 			
 			TextView description = (TextView) view.findViewById(R.id.description);
 			description.setText(resource.getTitle());
@@ -365,6 +402,7 @@ public class DayFragment extends ClassFragment implements OnDateChangedListener,
 		for (int i=0; i<homeworks.size(); i++) {
 			final Homework homework = homeworks.get(i);
 			View view = inflater.inflate(R.layout.activity_list_item, null);
+			view.setBackgroundResource(R.drawable.list_item_selector);
 			
 			TextView description = (TextView) view.findViewById(R.id.description);
 			description.setText(homework.getDescription());
@@ -477,6 +515,7 @@ public class DayFragment extends ClassFragment implements OnDateChangedListener,
 		for (int i=0; i<tasks.size(); i++) {
 			final Task task = tasks.get(i);
 			View taskView = inflater.inflate(R.layout.task_list_item, null);
+			taskView.setBackgroundResource(R.drawable.list_item_selector);
 			
 			final CheckBox completedCb = (CheckBox) taskView.findViewById(R.id.completedCb);
 			completedCb.setText(task.getDescription());
@@ -728,6 +767,133 @@ public class DayFragment extends ClassFragment implements OnDateChangedListener,
 		if (requestCode == ADD_RESOURCE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
 			requestResources();
 		}
+	}
+	
+	private void openFile(File url) throws IOException {
+        File file = url;
+        Uri uri = Uri.fromFile(file);
+        
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        if (url.toString().contains(".doc") || url.toString().contains(".docx")) {
+            intent.setDataAndType(uri, "application/msword");
+        } else if(url.toString().contains(".pdf")) {
+            intent.setDataAndType(uri, "application/pdf");
+        } else if(url.toString().contains(".ppt") || url.toString().contains(".pptx")) {
+            intent.setDataAndType(uri, "application/vnd.ms-powerpoint");
+        } else if(url.toString().contains(".xls") || url.toString().contains(".xlsx")) {
+            intent.setDataAndType(uri, "application/vnd.ms-excel");
+        } else if(url.toString().contains(".zip") || url.toString().contains(".rar")) {
+            intent.setDataAndType(uri, "application/zip");
+        } else if(url.toString().contains(".rtf")) {
+            intent.setDataAndType(uri, "application/rtf");
+        } else if(url.toString().contains(".wav") || url.toString().contains(".mp3")) {
+            intent.setDataAndType(uri, "audio/x-wav");
+        } else if(url.toString().contains(".gif")) {
+            intent.setDataAndType(uri, "image/gif");
+        } else if(url.toString().contains(".jpg") || url.toString().contains(".jpeg") || url.toString().contains(".png")) {
+            intent.setDataAndType(uri, "image/jpeg");
+        } else if(url.toString().contains(".txt")) {
+            intent.setDataAndType(uri, "text/plain");
+        } else if(url.toString().contains(".3gp") || url.toString().contains(".mpg") || url.toString().contains(".mpeg") || url.toString().contains(".mpe") || url.toString().contains(".mp4") || url.toString().contains(".avi")) {
+            intent.setDataAndType(uri, "video/*");
+        } else {
+            intent.setDataAndType(uri, "*/*");
+        }
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+        startActivity(intent);
+    }
+	
+	class DownloadResourceTask extends AsyncTask<Void, Void, String> implements OnCancelListener {
+		
+		private ProgressDialog dialog;
+    	private Resource resource;
+    	
+    	public DownloadResourceTask(Resource resource) {
+    		this.resource = resource;
+    		dialog = new ProgressDialog(getActivity());
+    		dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    		dialog.setMessage(getString(R.string.downloading));
+    		dialog.setIndeterminate(true);
+    		dialog.setOnCancelListener(this);
+    	}
+    	
+    	@Override
+    	protected void onPreExecute() {
+    		dialog.show();
+    	}
+
+		@Override
+		public void onCancel(DialogInterface dialog) {
+			cancel(true);
+		}
+
+		@Override
+		protected String doInBackground(Void... params) {
+			InputStream input = null;
+	        OutputStream output = null;
+	        HttpURLConnection connection = null;
+			try {
+				URL url = new URL(resource.getUrl());
+	            connection = (HttpURLConnection) url.openConnection();
+	            connection.connect();
+
+	            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+	            	String error = getString(R.string.error) + " " + connection.getResponseCode() + ": " + connection.getResponseMessage();
+	                return error;
+	            }
+
+	            input = connection.getInputStream();
+	            
+	            File docDir = new File(Environment.getExternalStorageDirectory(), "/easyplanner/");
+				docDir.mkdirs();
+				File file = new File(docDir, resource.getTitle());
+	            
+	            output = new FileOutputStream(file);
+
+	            byte data[] = new byte[4096];
+	            int count;
+	            while ((count = input.read(data)) != -1) {
+	                if (isCancelled()) {
+	                    input.close();
+	                    return getString(R.string.canceled);
+	                }
+	                output.write(data, 0, count);
+	            }
+			} catch (Exception e) {
+				e.printStackTrace();
+				return getString(R.string.download_error);
+			} finally {
+				try {
+	                if (output != null)
+	                    output.close();
+	                if (input != null)
+	                    input.close();
+	            } catch (IOException ignored) {
+	            }
+			}
+			return null;
+		}
+		
+		@Override
+		public void onPostExecute(String error) {
+			if (dialog != null && dialog.isShowing())
+				dialog.dismiss();
+			if (!TextUtils.isEmpty(error)) {
+				((BaseScreen) getActivity()).showToast(error);
+			} else {
+				File docDir = new File(Environment.getExternalStorageDirectory() + "/easyplanner/");
+				docDir.mkdirs();
+				File file = new File(docDir, resource.getTitle());
+				if (file.exists()) {
+					try {
+						openFile(file);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		
 	}
 
 }

@@ -707,6 +707,7 @@ containing a value of this type.
         public static final int browse_web=0x7f050066;
         public static final int camera=0x7f05006a;
         public static final int cancel=0x7f050030;
+        public static final int canceled=0x7f050077;
         public static final int capture_media=0x7f05006b;
         public static final int changing_task_status=0x7f050063;
         public static final int class_name=0x7f05002c;
@@ -822,6 +823,7 @@ containing a value of this type.
         public static final int downloading=0x7f050071;
         public static final int dropbox=0x7f050057;
         public static final int email=0x7f050023;
+        public static final int email_app_select=0x7f050074;
         public static final int enter_class_name=0x7f05002d;
         public static final int error=0x7f050026;
         public static final int google_drive=0x7f05005a;
@@ -848,6 +850,7 @@ containing a value of this type.
         public static final int please_select_media=0x7f050068;
         public static final int preparation_tasks=0x7f05004f;
         public static final int report_bug=0x7f05003c;
+        public static final int report_bug_template=0x7f050076;
         public static final int required_days=0x7f050054;
         public static final int required_today=0x7f050055;
         public static final int review_app=0x7f05003b;
@@ -858,6 +861,7 @@ containing a value of this type.
         public static final int task=0x7f050050;
         public static final int tasks=0x7f050031;
         public static final int tell_friend=0x7f05003d;
+        public static final int tell_prewritten_message=0x7f050075;
         public static final int today=0x7f050033;
         public static final int visit_website=0x7f05003a;
         /**  Text on a placeholder buy button when Google Play services is not

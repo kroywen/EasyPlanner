@@ -18,7 +18,6 @@ public class MenuAdapter extends BaseAdapter {
 	private int[] images = new int[] {
 		R.drawable.contact_icon,
 		R.drawable.visit_site_icon,
-		R.drawable.review_app_icon,
 		R.drawable.report_bug_icon,
 		R.drawable.tell_friend_icon,
 		0

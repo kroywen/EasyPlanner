@@ -4,6 +4,8 @@ import java.text.ParseException;
 
 import org.json.JSONObject;
 
+import android.text.TextUtils;
+
 import com.thepegeekapps.easyplanner.util.Utilities;
 
 public class Resource {
@@ -108,6 +110,14 @@ public class Resource {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public boolean isFile() {
+		return !TextUtils.isEmpty(type) && type.equalsIgnoreCase("file");
+	}
+	
+	public boolean isUrl() {
+		return !TextUtils.isEmpty(type) && type.equalsIgnoreCase("url");
 	}
 
 }

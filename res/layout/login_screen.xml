@@ -34,8 +34,7 @@
             android:background="@drawable/edittext_background"
             android:inputType="textEmailAddress"
             android:maxLines="1"
-            android:hint="@string/email"
-            android:text="swd.levi@gmail.com" />
+            android:hint="@string/email" />
         
         <EditText 
             android:id="@+id/password"
@@ -46,8 +45,7 @@
             android:background="@drawable/edittext_background"
             android:inputType="textPassword"
             android:maxLines="1"
-            android:hint="@string/password"
-            android:text="asd" />
+            android:hint="@string/password" />
         
         <Button
             android:id="@+id/loginBtn"

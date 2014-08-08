@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:textColor="#0c3b6f"
+        android:textColor="@color/list_item_text_color"
         android:drawableLeft="@drawable/list_indicator"
         android:drawablePadding="10dp"
         android:text="Test Activity" />

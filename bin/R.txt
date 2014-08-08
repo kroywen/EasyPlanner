@@ -387,6 +387,7 @@ int string browse_one_drive 0x7f050070
 int string browse_web 0x7f050066
 int string camera 0x7f05006a
 int string cancel 0x7f050030
+int string canceled 0x7f050077
 int string capture_media 0x7f05006b
 int string changing_task_status 0x7f050063
 int string class_name 0x7f05002c
@@ -438,6 +439,7 @@ int string download_pattern 0x7f050072
 int string downloading 0x7f050071
 int string dropbox 0x7f050057
 int string email 0x7f050023
+int string email_app_select 0x7f050074
 int string enter_class_name 0x7f05002d
 int string error 0x7f050026
 int string google_drive 0x7f05005a
@@ -464,6 +466,7 @@ int string planned_homework 0x7f05004a
 int string please_select_media 0x7f050068
 int string preparation_tasks 0x7f05004f
 int string report_bug 0x7f05003c
+int string report_bug_template 0x7f050076
 int string required_days 0x7f050054
 int string required_today 0x7f050055
 int string review_app 0x7f05003b
@@ -474,6 +477,7 @@ int string settings 0x7f050038
 int string task 0x7f050050
 int string tasks 0x7f050031
 int string tell_friend 0x7f05003d
+int string tell_prewritten_message 0x7f050075
 int string today 0x7f050033
 int string visit_website 0x7f05003a
 int string wallet_buy_button_place_holder 0x7f05001f

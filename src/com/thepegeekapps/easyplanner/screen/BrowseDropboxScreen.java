@@ -32,8 +32,6 @@ public class BrowseDropboxScreen extends BaseScreen implements OnItemClickListen
 	
 	public static final String APP_KEY = "6gvxz6b3fzsvpqt";
 	public static final String APP_SECRET = "195fqlmzssn3ceu";
-//	public static final String APP_KEY = "wvqp76ja510wtiv";
-//	public static final String APP_SECRET = "czdeb8nfv7tjaxn";
 	
 	final static private String ACCOUNT_PREFS_NAME = "prefs";
     final static private String ACCESS_KEY_NAME = "ACCESS_KEY";

@@ -78,7 +78,6 @@
 			android:configChanges="orientation|keyboard">
 	  		<intent-filter>
 				<data android:scheme="db-6gvxz6b3fzsvpqt" />
-				<!-- <data android:scheme="db-wvqp76ja510wtiv" /> -->
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.BROWSABLE"/>
 				<category android:name="android.intent.category.DEFAULT" />

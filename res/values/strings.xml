@@ -86,6 +86,10 @@
     <string name="downloading">Downloading &#8230;</string>
     <string name="download_pattern">%1$s out of %2$s</string>
     <string name="download_error">An error occurred while downloading files</string>
+    <string name="email_app_select">Select Email Application</string>
+    <string name="tell_prewritten_message">Checkout the apps by The PE Geek on the Google Play Store <a>https://play.google.com/store/apps/developer?id=The+PE+Geek&amp;hl=en</a></string>
+    <string name="report_bug_template">Please describe steps to reproduce a bug:\n\n---------\nDevice: %1$s %2$s;\nOS Version: %3$s</string>
+    <string name="canceled">Canceled</string>
     
     <plurals name="daysCount">
         <item quantity="one">Required in %d Day</item>
@@ -95,7 +99,6 @@
     <string-array name="menu_items">
         <item>@string/contact_us</item>
         <item>@string/visit_website</item>
-        <item>@string/review_app</item>
         <item>@string/report_bug</item>
         <item>@string/tell_friend</item>
         <item>@string/logout</item>
