@@ -5,6 +5,17 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,6 +23,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -23,10 +35,12 @@ import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.thepegeekapps.easyplanner.R;
 import com.thepegeekapps.easyplanner.api.ApiData;
 import com.thepegeekapps.easyplanner.api.ApiResponse;
+import com.thepegeekapps.easyplanner.api.ApiService;
 import com.thepegeekapps.easyplanner.util.Utilities;
 
 public class AddResourceScreen extends BaseScreen implements OnCheckedChangeListener, OnClickListener {
@@ -67,6 +81,7 @@ public class AddResourceScreen extends BaseScreen implements OnCheckedChangeList
 	private String cameraFile;
 	private String galleryFile;
 	private String link;
+	private String linkTitle;
 	private String dropboxFile;
 	private String googleDriveFile;
 	private String oneDriveFile;
@@ -249,7 +264,8 @@ public class AddResourceScreen extends BaseScreen implements OnCheckedChangeList
 				break;
 			case GET_LINK_REQUEST_CODE:
 				link = data.getDataString();
-				linkText.setText(link);
+				linkTitle = data.getStringExtra("title");
+				linkText.setText(linkTitle);
 				linkText.setTextColor(0xff000000);
 				break;
 			case BROWSE_DROPBOX_REQUEST_CODE:
@@ -264,6 +280,7 @@ public class AddResourceScreen extends BaseScreen implements OnCheckedChangeList
 				break;
 			case BROWSE_ONE_DRIVE_REQUEST_CODE:
 				oneDriveFile = data.getStringExtra("filepath");
+				Toast.makeText(this, oneDriveFile, Toast.LENGTH_SHORT).show();
 				oneDriveText.setText(Utilities.extractFilename(oneDriveFile));
 				oneDriveText.setTextColor(0xff000000);
 				break;
@@ -301,12 +318,127 @@ public class AddResourceScreen extends BaseScreen implements OnCheckedChangeList
 	}
 	
 	private void addAll() {
+		showProgressDialog(R.string.adding);
 		
+		if (!TextUtils.isEmpty(cameraFile)) {
+			new UploadResourceTask(cameraFile).execute();
+			cameraFile = null;
+			return;
+		}
+		
+		if (!TextUtils.isEmpty(galleryFile)) {
+			new UploadResourceTask(galleryFile).execute();
+			galleryFile = null;
+			return;
+		}
+		
+		if (!TextUtils.isEmpty(dropboxFile)) {
+			new UploadResourceTask(dropboxFile).execute();
+			dropboxFile = null;
+			return;
+		}
+			
+		if (!TextUtils.isEmpty(googleDriveFile)) {
+			new UploadResourceTask(googleDriveFile).execute();
+			googleDriveFile = null;
+			return;
+		}
+		
+		if (!TextUtils.isEmpty(oneDriveFile)) {
+			new UploadResourceTask(oneDriveFile).execute();
+			oneDriveFile = null;
+			return;
+		}
+		
+		if (!TextUtils.isEmpty(link)) {
+			requestCreateLink();
+			return;
+		}
+		
+		hideProgressDialog();
+		setResult(RESULT_OK);
+		finish();
+	}
+	
+	private void requestCreateLink() {
+		Intent intent = new Intent(this, ApiService.class);
+		intent.setData(Uri.parse(ApiData.RESOURCE));
+		intent.setAction(ApiData.POST);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		intent.putExtra(ApiData.PARAM_CLASS_ID, classId);
+		intent.putExtra(ApiData.PARAM_TITLE, linkTitle);
+		intent.putExtra(ApiData.PARAM_URL, link);
+		intent.putExtra(ApiData.PARAM_DATE, Utilities.parseTime(date, Utilities.dd_MM_yyyy));
+		startService(intent);
+		
+		link = null;
 	}
 	
 	@Override
 	public void onApiResponse(int apiStatus, ApiResponse apiResponse) {
-		hideProgressDialog();
+		if (apiStatus == ApiService.API_STATUS_SUCCESS) {
+			int status = apiResponse.getStatus();
+			if (status == ApiResponse.STATUS_SUCCESS) {
+				if (ApiData.RESOURCE.equalsIgnoreCase(apiResponse.getRequestName())) {
+					addAll();
+				}
+			} else {
+				hideProgressDialog();
+				showInfoDialog(getString(R.string.error), apiResponse.getError());
+			}
+		} else {
+			hideProgressDialog();
+			showInfoDialog(getString(R.string.error), apiResponse.getError());
+		}
+	}
+	
+	class UploadResourceTask extends AsyncTask<Void, Void, Void> {
+		
+		private String filename;
+		
+		public UploadResourceTask(String filename) {
+			this.filename= filename; 
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			
+			HttpClient client = new DefaultHttpClient();
+			HttpPost post = new HttpPost(ApiData.BASE_URL + ApiData.UPLOAD);
+			
+			ContentBody tokenBody = new StringBody(settings.getString(ApiData.TOKEN), ContentType.MULTIPART_FORM_DATA);
+			ContentBody classIdBody = new StringBody(String.valueOf(classId), ContentType.MULTIPART_FORM_DATA);
+			ContentBody dateBody = new StringBody(Utilities.parseTime(date, Utilities.dd_MM_yyyy), ContentType.MULTIPART_FORM_DATA);
+			File file = new File(filename);
+			ContentBody fileBody = new FileBody(file);
+			
+			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+			builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
+				.addPart(ApiData.TOKEN, tokenBody)
+				.addPart(ApiData.PARAM_CLASS_ID, classIdBody)
+				.addPart(ApiData.PARAM_DATE, dateBody)
+				.addPart(ApiData.PARAM_FILE, fileBody);
+			
+			HttpEntity entity = builder.build();
+			post.setEntity(entity);
+			
+			try {
+				client.execute(post);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			client.getConnectionManager().shutdown();
+			
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+//			File file = new File(filename);
+//			file.delete();
+			addAll();
+		}
+		
 	}
 
 }

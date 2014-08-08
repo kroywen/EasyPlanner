@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -19,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dropbox.client2.RESTUtility.RequestMethod;
 import com.thepegeekapps.easyplanner.R;
 import com.thepegeekapps.easyplanner.api.ApiData;
 import com.thepegeekapps.easyplanner.api.ApiResponse;
@@ -28,6 +30,7 @@ import com.thepegeekapps.easyplanner.dialog.InputDialog;
 import com.thepegeekapps.easyplanner.dialog.InputDialog.OnInputClickListener;
 import com.thepegeekapps.easyplanner.model.Activiti;
 import com.thepegeekapps.easyplanner.model.Homework;
+import com.thepegeekapps.easyplanner.model.Resource;
 import com.thepegeekapps.easyplanner.model.Task;
 import com.thepegeekapps.easyplanner.screen.AddResourceScreen;
 import com.thepegeekapps.easyplanner.screen.BaseScreen;
@@ -38,6 +41,8 @@ import com.thepegeekapps.easyplanner.ui.view.DateView.OnDateChangedListener;
 import com.thepegeekapps.easyplanner.util.Utilities;
 
 public class DayFragment extends ClassFragment implements OnDateChangedListener, OnClickListener {
+	
+	public static final int ADD_RESOURCE_REQUEST_CODE = 0;
 	
 	private DateView dateView;
 	
@@ -62,6 +67,7 @@ public class DayFragment extends ClassFragment implements OnDateChangedListener,
 	
 	private String[] daysOfWeek;
 	private List<Activiti> activities;
+	private List<Resource> resources;
 	private List<Homework> homeworks;
 	private List<Task> tasks;
 	
@@ -124,6 +130,7 @@ public class DayFragment extends ClassFragment implements OnDateChangedListener,
 	public void updateViews() {
 		updateCurrentDay();
 		requestActivities();
+		requestResources();
 		requestHomeworks();
 		requestTasks();
 	}
@@ -245,6 +252,85 @@ public class DayFragment extends ClassFragment implements OnDateChangedListener,
 		intent.putExtra(ApiData.PARAM_ACTIVITY_ID, activity.getId());
 		getActivity().startService(intent);
 		((BaseScreen) getActivity()).showProgressDialog(R.string.deleting_activity);
+	}
+	
+	private void requestResources(){
+		long dayStart = Utilities.getDayStart(getTime()) / 1000;
+		long dayEnd = Utilities.getDayEnd(getTime()) / 1000;
+		
+		Intent intent = new Intent(getActivity(), ApiService.class);
+		intent.setData(Uri.parse(ApiData.RESOURCE));
+		intent.setAction(ApiData.GET);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		intent.putExtra(ApiData.PARAM_CLASS_ID, classId);
+		intent.putExtra(ApiData.PARAM_DATE_START, dayStart);
+		intent.putExtra(ApiData.PARAM_DATE_END, dayEnd); 
+		getActivity().startService(intent);
+	}
+	
+	private void updateResources() {
+		if (Utilities.isEmpty(resources)) {
+			mediaEmptyView.setVisibility(View.VISIBLE);
+			mediaContent.setVisibility(View.GONE);
+		} else {
+			populateResourcesContent(resources);
+			mediaEmptyView.setVisibility(View.GONE);
+			mediaContent.setVisibility(View.VISIBLE);
+		}
+	}
+	
+	private void populateResourcesContent(List<Resource> resources) {
+		mediaContent.removeAllViews();
+		LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		for (int i=0; i<resources.size(); i++) {
+			final Resource resource = resources.get(i);
+			View view = inflater.inflate(R.layout.activity_list_item, null);
+			
+			TextView description = (TextView) view.findViewById(R.id.description);
+			description.setText(resource.getTitle());
+			
+			ImageView removeBtn = (ImageView) view.findViewById(R.id.removeBtn);
+			removeBtn.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					showDeleteResourceDialog(resource);
+				}
+			});
+			
+			mediaContent.addView(view);
+		}
+	}
+	
+	private void showDeleteResourceDialog(final Resource resource) {
+		final ConfirmationDialog dialog = new ConfirmationDialog();
+		dialog.setTitle(getString(R.string.information));
+		dialog.setText(getString(R.string.delete_resource_confirmation));
+		dialog.setOkListener(getString(R.string.delete), new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				requestDeleteResource(resource);
+				dialog.dismiss();
+			}
+		});
+		dialog.setCancelListener(getString(R.string.cancel), new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+		
+		dialog.show(getChildFragmentManager(), "DeleteResourceDialog");
+	}
+	
+	private void requestDeleteResource(Resource resource) {
+		Intent intent = new Intent(getActivity(), ApiService.class);
+		intent.setData(Uri.parse(ApiData.RESOURCE));
+		intent.setAction(ApiData.DELETE);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		intent.putExtra(ApiData.PARAM_CLASS_ID, classId);
+		intent.putExtra(ApiData.PARAM_RESOURCE_ID, resource.getId());
+		getActivity().startService(intent);
+		showProgressDialog(R.string.deleting_resource);
 	}
 	
 	private void requestHomeworks() {
@@ -571,7 +657,7 @@ public class DayFragment extends ClassFragment implements OnDateChangedListener,
 		Intent intent = new Intent(getActivity(), AddResourceScreen.class);
 		intent.putExtra(ApiData.PARAM_CLASS_ID, classId);
 		intent.putExtra(ApiData.PARAM_DATE, getTime());
-		startActivity(intent);
+		startActivityForResult(intent, ADD_RESOURCE_REQUEST_CODE);
 	}
 	
 	public void setCurrentTime(long time) {
@@ -607,6 +693,15 @@ public class DayFragment extends ClassFragment implements OnDateChangedListener,
 					{
 						requestActivities();
 					}
+				} else if (ApiData.RESOURCE.equalsIgnoreCase(requestName)) {
+					if (ApiData.GET.equalsIgnoreCase(method)) {
+						resources = (List<Resource>) apiResponse.getData();
+						updateResources();
+					} else if (ApiData.DELETE.equalsIgnoreCase(method) ||
+						ApiData.POST.equalsIgnoreCase(method)) 
+					{
+						requestResources();
+					}
 				} else if (ApiData.HOMEWORK.equalsIgnoreCase(requestName)) {
 					if (ApiData.GET.equalsIgnoreCase(method)) {
 						homeworks = (List<Homework>) apiResponse.getData();
@@ -625,6 +720,13 @@ public class DayFragment extends ClassFragment implements OnDateChangedListener,
 					}
 				}
 			}
+		}
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == ADD_RESOURCE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+			requestResources();
 		}
 	}
 

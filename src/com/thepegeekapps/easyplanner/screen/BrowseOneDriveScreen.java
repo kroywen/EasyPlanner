@@ -175,7 +175,7 @@ public class BrowseOneDriveScreen extends BaseScreen implements LiveAuthListener
 			
 			final File file = new File(docDir, filename);
 			
-			final LiveDownloadOperation operation = client.downloadAsync(id + "/content", new LiveDownloadOperationListener() {
+			final LiveDownloadOperation operation = client.downloadAsync(id + "/content", file, new LiveDownloadOperationListener() {
 				@Override
 				public void onDownloadProgress(int totalBytes, int bytesRemaining, LiveDownloadOperation operation) {
 					long bytesDownloaded = totalBytes - bytesRemaining;

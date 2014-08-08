@@ -108,6 +108,7 @@ public class GetLinkScreen extends BaseScreen implements OnClickListener {
 		case R.id.saveBtn:
 			Intent result = new Intent();
 			result.setData(Uri.parse(url));
+			result.putExtra("title", webView.getTitle());
 			setResult(RESULT_OK, result);
 			finish();
 			break;

@@ -43,6 +43,7 @@
     <string name="delete_activity_confirmation">Are you sure you want to delete this activity?</string>
     <string name="media_resources">Media Resources</string>
     <string name="no_resources">You have no resources yet</string>
+    <string name="delete_resource_confirmation">Are you sure you want to delete this resource?</string>
     <string name="planned_homework">Planned Homework</string>
     <string name="no_homework">You have no homework yet</string>
     <string name="homework">Homework</string>
@@ -63,6 +64,7 @@
     <string name="browse_google_drive">Browse Google Drive</string>
     <string name="deleting_activity">Deleting activity</string>
     <string name="adding_activity">Adding activity</string>
+    <string name="deleting_resource">Deleting resource</string>
     <string name="deleting_homework">Deleting homework</string>
     <string name="adding_homework">Adding homework</string>
     <string name="adding_task">Adding task</string>

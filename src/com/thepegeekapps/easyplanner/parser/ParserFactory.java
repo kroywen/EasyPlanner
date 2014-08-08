@@ -23,6 +23,12 @@ public class ParserFactory {
 			} else {
 				return new SimpleParser();
 			}
+		} else if (ApiData.RESOURCE.equalsIgnoreCase(command)) {
+			if (ApiData.GET.equalsIgnoreCase(method)) {
+				return new ResourceListParser();
+			} else {
+				return new SimpleParser();
+			}
 		} else if (ApiData.HOMEWORK.equalsIgnoreCase(command)) {
 			if (ApiData.GET.equalsIgnoreCase(method)) {
 				return new HomeworkListParser();

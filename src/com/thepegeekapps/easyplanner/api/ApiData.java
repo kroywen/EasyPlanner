@@ -13,6 +13,8 @@ public class ApiData {
 	public static final String AUTHENTICATE = "authenticate";
 	public static final String CLASSES = "classes";
 	public static final String ACTIVITY = "activity";
+	public static final String RESOURCE = "resource";
+	public static final String UPLOAD = "upload";
 	public static final String HOMEWORK = "homework"; 
 	public static final String TASK = "task";
 	
@@ -27,10 +29,14 @@ public class ApiData {
 	public static final String PARAM_ACTIVITY_ID = "activity_id";
 	public static final String PARAM_TEXT = "text";
 	public static final String PARAM_DATE = "date";
+	public static final String PARAM_RESOURCE_ID = "resource_id";
 	public static final String PARAM_HOMEWORK_ID = "homework_id";
 	public static final String PARAM_PARENT_ID = "parent_id";
 	public static final String PARAM_TASK_ID = "task_id";
 	public static final String PARAM_COMPLETED = "completed";
+	public static final String PARAM_TITLE = "title";
+	public static final String PARAM_URL = "url";
+	public static final String PARAM_FILE = "file";
 	
 	public static final String ERROR = "error";
 	public static final String TOKEN = "token";
