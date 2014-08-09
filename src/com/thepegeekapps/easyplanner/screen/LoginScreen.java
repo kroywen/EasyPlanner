@@ -17,9 +17,12 @@ import com.thepegeekapps.easyplanner.util.Utilities;
 
 public class LoginScreen extends BaseScreen implements OnClickListener {
 	
+	public static final int REGISTER_REQUEST_CODE = 0;
+	
 	private EditText email;
 	private EditText password;
 	private Button loginBtn;
+	private View registerLink;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,8 @@ public class LoginScreen extends BaseScreen implements OnClickListener {
 		password.setText(settings.getString(Settings.PASSWORD));
 		loginBtn = (Button) findViewById(R.id.loginBtn);
 		loginBtn.setOnClickListener(this);
+		registerLink = findViewById(R.id.registerLink);
+		registerLink.setOnClickListener(this);
 	}
 
 	@Override
@@ -47,6 +52,9 @@ public class LoginScreen extends BaseScreen implements OnClickListener {
 			} else {
 				showConnectionErrorDialog();
 			}
+			break;
+		case R.id.registerLink:
+			startRegisterScreen();
 			break;
 		}
 	}
@@ -88,6 +96,18 @@ public class LoginScreen extends BaseScreen implements OnClickListener {
 		Intent intent = new Intent(this, MainScreen.class);
 		startActivity(intent);
 		finish();
+	}
+	
+	private void startRegisterScreen() {
+		Intent intent = new Intent(this, RegisterScreen.class);
+		startActivityForResult(intent, REGISTER_REQUEST_CODE);
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == REGISTER_REQUEST_CODE && resultCode == RESULT_OK) {
+			startMainScreen();
+		}
 	}
 
 }

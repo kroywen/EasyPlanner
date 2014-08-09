@@ -280,7 +280,6 @@ public class AddResourceScreen extends BaseScreen implements OnCheckedChangeList
 				break;
 			case BROWSE_ONE_DRIVE_REQUEST_CODE:
 				oneDriveFile = data.getStringExtra("filepath");
-				Toast.makeText(this, oneDriveFile, Toast.LENGTH_SHORT).show();
 				oneDriveText.setText(Utilities.extractFilename(oneDriveFile));
 				oneDriveText.setTextColor(0xff000000);
 				break;
@@ -434,8 +433,6 @@ public class AddResourceScreen extends BaseScreen implements OnCheckedChangeList
 		
 		@Override
 		protected void onPostExecute(Void result) {
-//			File file = new File(filename);
-//			file.delete();
 			addAll();
 		}
 		

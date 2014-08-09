@@ -34,6 +34,8 @@
             android:background="@drawable/edittext_background"
             android:inputType="textEmailAddress"
             android:maxLines="1"
+            android:drawableLeft="@drawable/icon_username"
+            android:drawablePadding="5dp"
             android:hint="@string/email" />
         
         <EditText 
@@ -45,6 +47,8 @@
             android:background="@drawable/edittext_background"
             android:inputType="textPassword"
             android:maxLines="1"
+            android:drawableLeft="@drawable/icon_password"
+            android:drawablePadding="5dp"
             android:hint="@string/password" />
         
         <Button
@@ -57,5 +61,15 @@
             android:text="@android:string/ok" />
         
     </LinearLayout>
+    
+    <TextView
+        android:id="@+id/registerLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textColor="@android:color/white"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:text="@string/register_link" />
 
 </RelativeLayout>

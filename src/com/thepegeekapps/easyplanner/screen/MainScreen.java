@@ -28,6 +28,7 @@ import com.thepegeekapps.easyplanner.fragment.ClassesFragment;
 import com.thepegeekapps.easyplanner.fragment.TasksFragment;
 import com.thepegeekapps.easyplanner.lib.slideout.SlideoutActivity;
 import com.thepegeekapps.easyplanner.model.Clas;
+import com.thepegeekapps.easyplanner.model.Task;
 import com.thepegeekapps.easyplanner.util.Utilities;
 
 public class MainScreen extends BaseScreen implements OnClickListener, OnPageChangeListener, OnCheckedChangeListener {
@@ -59,6 +60,7 @@ public class MainScreen extends BaseScreen implements OnClickListener, OnPageCha
 		
 		if (Utilities.isConnectionAvailable(this)) {
 			requestClasses();
+			requestTasks();
 		} else {
 			showConnectionErrorDialog();
 		}
@@ -214,6 +216,64 @@ public class MainScreen extends BaseScreen implements OnClickListener, OnPageCha
 		}
 	}
 	
+	public void tryMarkTask(Task task, boolean showProgress) {
+		if (task == null) {
+			return;
+		}
+		if (Utilities.isConnectionAvailable(this)) {
+			requestMarkTask(task, showProgress);
+		} else {
+			showConnectionErrorDialog();
+		}
+	}
+	
+	public void tryDeleteTask(Task task) {
+		if (task == null) {
+			return;
+		}
+		if (Utilities.isConnectionAvailable(this)) {
+			requestDeleteTask(task);
+		} else {
+			showConnectionErrorDialog();
+		}
+	}
+	
+	public void tryAddTask(Task task) {
+		if (task == null) {
+			return;
+		}
+		if (Utilities.isConnectionAvailable(this)) {
+			requestAddTask(task);
+		} else {
+			showConnectionErrorDialog();
+		}
+	}
+	
+	private void requestMarkTask(Task task, boolean showProgress) {
+		Intent intent = new Intent(this, ApiService.class);
+		intent.setData(Uri.parse(ApiData.TASK));
+		intent.setAction(ApiData.PUT);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		intent.putExtra(ApiData.PARAM_CLASS_ID, task.getClassId());
+		intent.putExtra(ApiData.PARAM_TASK_ID, task.getId());
+		intent.putExtra(ApiData.PARAM_COMPLETED, task.isCompleted() ? "yes" : "no");
+		startService(intent);
+		if (showProgress) {
+			showProgressDialog(R.string.changing_task_status);
+		}
+	}
+	
+	private void requestDeleteTask(Task task) {
+		Intent intent = new Intent(this, ApiService.class);
+		intent.setData(Uri.parse(ApiData.TASK));
+		intent.setAction(ApiData.DELETE);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		intent.putExtra(ApiData.PARAM_CLASS_ID, task.getClassId());
+		intent.putExtra(ApiData.PARAM_TASK_ID, task.getId());
+		startService(intent);
+		showProgressDialog(R.string.deleting_task);
+	}
+	
 	private void requestDeleteClass(Clas clas) {
 		Intent intent = new Intent(this, ApiService.class);
 		intent.setData(Uri.parse(ApiData.CLASSES));
@@ -222,6 +282,21 @@ public class MainScreen extends BaseScreen implements OnClickListener, OnPageCha
 		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
 		startService(intent);
 		showProgressDialog(R.string.deleting_class);
+	}
+	
+	private void requestAddTask(Task task) {
+		Intent intent = new Intent(this, ApiService.class);
+		intent.setData(Uri.parse(ApiData.TASK));
+		intent.setAction(ApiData.POST);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		intent.putExtra(ApiData.PARAM_CLASS_ID, task.getClassId());
+		intent.putExtra(ApiData.PARAM_TEXT, task.getDescription());
+		intent.putExtra(ApiData.PARAM_DATE, Utilities.parseTime(task.getTime(), Utilities.dd_MM_yyyy));
+		if (task.hasParentId()) {
+			intent.putExtra(ApiData.PARAM_PARENT_ID, task.getParentId());
+		}
+		startService(intent);
+		showProgressDialog(R.string.adding_task);
 	}
 	
 	private void requestClasses() {
@@ -243,6 +318,14 @@ public class MainScreen extends BaseScreen implements OnClickListener, OnPageCha
 		showProgressDialog(R.string.add_class);
 	}
 	
+	private void requestTasks() {
+		Intent intent = new Intent(this, ApiService.class);
+		intent.setData(Uri.parse(ApiData.TASK));
+		intent.setAction(ApiData.GET);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		startService(intent);
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onApiResponse(int apiStatus, ApiResponse apiResponse) {
@@ -261,6 +344,17 @@ public class MainScreen extends BaseScreen implements OnClickListener, OnPageCha
 						requestClasses();
 					} else if (ApiData.DELETE.equalsIgnoreCase(method)) {
 						requestClasses();
+					}
+				} else if (ApiData.TASK.equalsIgnoreCase(requestName)) {
+					if (ApiData.GET.equalsIgnoreCase(method)) {
+						List<Task> tasks = (List<Task>) apiResponse.getData();
+						TasksFragment tf = (TasksFragment) pagerAdapter.findFragmentByPosition(1);
+						tf.setTasks(tasks);
+					} else if (ApiData.PUT.equalsIgnoreCase(method) ||
+						ApiData.DELETE.equalsIgnoreCase(method) ||
+						ApiData.POST.equalsIgnoreCase(method)) 
+					{
+						requestTasks();
 					}
 				}
 			} else {

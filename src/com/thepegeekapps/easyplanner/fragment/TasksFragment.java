@@ -1,8 +1,10 @@
 package com.thepegeekapps.easyplanner.fragment;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,6 +12,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +28,6 @@ import com.thepegeekapps.easyplanner.dialog.InputDialog;
 import com.thepegeekapps.easyplanner.dialog.InputDialog.OnInputClickListener;
 import com.thepegeekapps.easyplanner.model.Task;
 import com.thepegeekapps.easyplanner.screen.MainScreen;
-import com.thepegeekapps.easyplanner.storage.db.DatabaseHelper;
-import com.thepegeekapps.easyplanner.storage.db.DatabaseStorage;
 import com.thepegeekapps.easyplanner.util.Utilities;
 
 public class TasksFragment extends Fragment {
@@ -35,7 +36,6 @@ public class TasksFragment extends Fragment {
 	private LinearLayout tasksContent;
 	
 	private List<Task> tasks;
-	private DatabaseStorage dbStorage;
 	private int timeSelected;
 	
 	public static TasksFragment newInstance(int timeSelected) {
@@ -49,10 +49,10 @@ public class TasksFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		dbStorage = new DatabaseStorage(getActivity());
 		timeSelected = (getArguments() != null) ? getArguments().getInt("time") : 0;
 	}
 	
+	@SuppressLint("InflateParams")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.tasks_fragment, null);
@@ -77,26 +77,37 @@ public class TasksFragment extends Fragment {
 	}
 	
 	public void updateViews() {
-		String selection = null;
-		if (timeSelected == MainScreen.TIME_TODAY) {
-			Calendar calendar = Calendar.getInstance(); 
-			long dayStart = Utilities.getDayStart(calendar.getTimeInMillis());
-			long dayEnd = Utilities.getDayEnd(calendar.getTimeInMillis());
-			selection = DatabaseHelper.FIELD_TIME + " > " + dayStart + " AND " +
-				DatabaseHelper.FIELD_TIME + " < " + dayEnd;
-		}
-		tasks = dbStorage.getTasks(selection);
+		List<Task> filtered = (timeSelected == MainScreen.TIME_TODAY) ?
+			getTodayTasks() : tasks;
 		
-		if (Utilities.isEmpty(tasks)) {
+		if (Utilities.isEmpty(filtered)) {
 			emptyView.setVisibility(View.VISIBLE);
 			tasksContent.setVisibility(View.INVISIBLE);
 		} else {
 			emptyView.setVisibility(View.INVISIBLE);
 			tasksContent.setVisibility(View.VISIBLE);
-			populateTasksContent(tasks);
+			populateTasksContent(filtered);
 		}
 	}
 	
+	private List<Task> getTodayTasks() {
+		Calendar calendar = Calendar.getInstance(); 
+		long dayStart = Utilities.getDayStart(calendar.getTimeInMillis());
+		long dayEnd = Utilities.getDayEnd(calendar.getTimeInMillis());
+		List<Task> filtered = null;
+		if (!Utilities.isEmpty(tasks)) {
+			filtered = new ArrayList<Task>();
+			for (Task task : tasks) {
+				Log.d("TaskTime", task.getDescription() + " - " + Utilities.parseTime(task.getTime(), Utilities.EEE_dd_LLL_yyyy_kk_mm_ss_Z));
+				if (task.getTime() >= dayStart && task.getTime() < dayEnd) {
+					filtered.add(task);
+				}
+			}
+		}
+		return filtered;
+	}
+	
+	@SuppressLint("InflateParams")
 	private void populateTasksContent(List<Task> tasks) {
 		tasksContent.removeAllViews();
 		LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -148,8 +159,7 @@ public class TasksFragment extends Fragment {
 					@Override
 					public void onClick(View v) {
 						task.setCompleted(!task.isCompleted());
-						dbStorage.updateTask(task);
-						updateViews();
+						((MainScreen) getActivity()).tryMarkTask(task, true);
 					}
 				});
 			}
@@ -189,10 +199,10 @@ public class TasksFragment extends Fragment {
 						@Override
 						public void onClick(View v) {
 							subtask.setCompleted(!subtask.isCompleted());
-							dbStorage.updateTask(subtask);
+							((MainScreen) getActivity()).tryMarkTask(subtask, true);
 							
 							task.setCompleted(task.areSubtasksCompleted());
-							dbStorage.updateTask(task);
+							((MainScreen) getActivity()).tryMarkTask(task, false);
 							
 							updateViews();
 						}
@@ -227,9 +237,8 @@ public class TasksFragment extends Fragment {
 		dialog.setOkListener(getString(R.string.delete), new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				dbStorage.deleteTask(task);
-				updateViews();
 				dialog.dismiss();
+				((MainScreen) getActivity()).tryDeleteTask(task);
 			}
 		});
 		dialog.setCancelListener(getString(R.string.cancel), new View.OnClickListener() {
@@ -253,16 +262,32 @@ public class TasksFragment extends Fragment {
 				if (TextUtils.isEmpty(inputText)) {
 					Toast.makeText(getActivity(), R.string.describe_task, Toast.LENGTH_SHORT).show();
 				} else {
-					Task parent = dbStorage.getTaskById(parentId);
+					Task parent = getTaskById(parentId);
 					Task task = new Task(0, parent.getClassId(), parentId, inputText, System.currentTimeMillis(), false);
-					dbStorage.addTask(task);
-					updateViews();
+					((MainScreen) getActivity()).tryAddTask(task); 
 				}
 			}
 			@Override
 			public void onInputCancelClick() {}
 		});
-		dialog.show(getChildFragmentManager(), "add_task");	
+		dialog.show(getChildFragmentManager(), "AddTaskDialog");	
+	}
+	
+	public void setTasks(List<Task> tasks) {
+		this.tasks = tasks;
+		updateViews();
+	}
+	
+	private Task getTaskById(long id) {
+		if (Utilities.isEmpty(tasks)) {
+			return null;
+		}
+		for (Task task : tasks) {
+			if (task.getId() == id) {
+				return task;
+			}
+		}
+		return null;
 	}
 
 }
