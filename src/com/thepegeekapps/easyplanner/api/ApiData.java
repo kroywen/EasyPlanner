@@ -12,6 +12,7 @@ public class ApiData {
 	
 	public static final String AUTHENTICATE = "authenticate";
 	public static final String USER = "user";
+	public static final String SETTINGS = "settings";
 	public static final String CLASSES = "classes";
 	public static final String ACTIVITY = "activity";
 	public static final String RESOURCE = "resource";

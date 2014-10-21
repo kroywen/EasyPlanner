@@ -110,6 +110,7 @@
     <string name="purchasing_error">Purchasing failed: %1$s</string>
     <string name="developer_payload_verification_error">Invalid developer payload</string>
     <string name="loading_data">Loading data</string>
+    <string name="max_classes_limit_reached">You have reached maximum limit of classes</string>
     
     <plurals name="daysCount">
         <item quantity="one">Required in %d Day</item>

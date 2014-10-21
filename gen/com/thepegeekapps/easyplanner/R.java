@@ -878,6 +878,7 @@ containing a value of this type.
         public static final int loading_data=0x7f05008b;
         public static final int login_to_get_started=0x7f050022;
         public static final int logout=0x7f05003e;
+        public static final int max_classes_limit_reached=0x7f05008c;
         public static final int media_resources=0x7f050047;
         public static final int month=0x7f050041;
         public static final int no_activities=0x7f050043;

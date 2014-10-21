@@ -494,6 +494,7 @@ int string loading_classes 0x7f050028
 int string loading_data 0x7f05008b
 int string login_to_get_started 0x7f050022
 int string logout 0x7f05003e
+int string max_classes_limit_reached 0x7f05008c
 int string media_resources 0x7f050047
 int string month 0x7f050041
 int string no_activities 0x7f050043

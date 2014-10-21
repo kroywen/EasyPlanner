@@ -13,6 +13,8 @@ public class ParserFactory {
 			return new LoginParser();
 		} else if (ApiData.USER.equalsIgnoreCase(command)) {
 			return new LoginParser();
+		} else if (ApiData.SETTINGS.equalsIgnoreCase(command)) {
+			return new AppSettingsParser();
 		} else if (ApiData.CLASSES.equalsIgnoreCase(command)) {
 			if (ApiData.GET.equalsIgnoreCase(method)) {
 				return new ClasListParser();

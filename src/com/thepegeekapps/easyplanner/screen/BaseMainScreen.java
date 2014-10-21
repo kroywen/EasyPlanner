@@ -2,6 +2,8 @@ package com.thepegeekapps.easyplanner.screen;
 
 import java.util.List;
 
+import org.apache.http.HttpStatus;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,8 +25,10 @@ import com.thepegeekapps.easyplanner.dialog.InputDialog.OnInputClickListener;
 import com.thepegeekapps.easyplanner.fragment.ClassesFragment;
 import com.thepegeekapps.easyplanner.fragment.TasksFragment;
 import com.thepegeekapps.easyplanner.lib.slideout.SlideoutActivity;
+import com.thepegeekapps.easyplanner.model.AppSetting;
 import com.thepegeekapps.easyplanner.model.Clas;
 import com.thepegeekapps.easyplanner.model.Task;
+import com.thepegeekapps.easyplanner.storage.Settings;
 import com.thepegeekapps.easyplanner.util.Utilities;
 
 public class BaseMainScreen extends BaseScreen implements OnClickListener, OnCheckedChangeListener {
@@ -44,6 +48,8 @@ public class BaseMainScreen extends BaseScreen implements OnClickListener, OnChe
 	
 	protected int timeSelected;
 	protected int slideoutWidth;
+	protected int maxClassesAllowed;
+	protected int classesSize;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +60,12 @@ public class BaseMainScreen extends BaseScreen implements OnClickListener, OnChe
 		updateViews();
 		calculateSlideoutWidth();
 		
+		maxClassesAllowed = settings.getInt(Settings.MAX_CLASSES_ALLOWED, 3);
+		
 		if (Utilities.isConnectionAvailable(this)) {
 			requestClasses();
 			requestTasks();
+			requestAppSettings();
 		} else {
 			showConnectionErrorDialog();
 		}
@@ -124,7 +133,11 @@ public class BaseMainScreen extends BaseScreen implements OnClickListener, OnChe
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.addClassBtn:
-			showAddClassDialog();
+			if (classesSize < maxClassesAllowed) {
+				showAddClassDialog();
+			} else {
+				showInfoDialog(R.string.information, R.string.max_classes_limit_reached);
+			}
 			break;
 		}
 	}
@@ -282,6 +295,14 @@ public class BaseMainScreen extends BaseScreen implements OnClickListener, OnChe
 		tf.setTimeSelected(timeSelected);
 	}
 	
+	private void requestAppSettings() {
+		Intent intent = new Intent(this, ApiService.class);
+		intent.setData(Uri.parse(ApiData.SETTINGS));
+		intent.setAction(ApiData.GET);
+		intent.putExtra(ApiData.TOKEN, settings.getString(ApiData.TOKEN));
+		startService(intent);
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onApiResponse(int apiStatus, ApiResponse apiResponse) {
@@ -291,11 +312,30 @@ public class BaseMainScreen extends BaseScreen implements OnClickListener, OnChe
 			String requestName = apiResponse.getRequestName();
 			String method = apiResponse.getMethod();
 			if (status == ApiResponse.STATUS_SUCCESS) {
-				if (ApiData.CLASSES.equalsIgnoreCase(requestName)) {
+				if (ApiData.SETTINGS.equalsIgnoreCase(requestName)) {
+					if (ApiData.GET.equalsIgnoreCase(method)) {
+						if (status == HttpStatus.SC_OK) {
+							List<AppSetting> appSettings = (List<AppSetting>) apiResponse.getData();
+							if (!Utilities.isEmpty(appSettings)) {
+								for (AppSetting appSetting : appSettings) {
+									if (AppSetting.ALLOWED.equalsIgnoreCase(appSetting.getName())) {
+										try {
+											maxClassesAllowed = Integer.parseInt(appSetting.getValue());
+											settings.setInt(Settings.MAX_CLASSES_ALLOWED, maxClassesAllowed);
+										} catch (Exception e) {
+											e.printStackTrace();
+										}
+									}
+								}
+							}
+						}
+					}
+				} else if (ApiData.CLASSES.equalsIgnoreCase(requestName)) {
 					if (ApiData.GET.equalsIgnoreCase(method)) {
 						List<Clas> classes = (List<Clas>) apiResponse.getData();
 						ClassesFragment cf = getClassesFragment();
 						cf.setClasses(classes);
+						classesSize = Utilities.isEmpty(classes) ? 0 : classes.size(); 
 					} else if (ApiData.POST.equalsIgnoreCase(method)) {
 						requestClasses();
 					} else if (ApiData.DELETE.equalsIgnoreCase(method)) {

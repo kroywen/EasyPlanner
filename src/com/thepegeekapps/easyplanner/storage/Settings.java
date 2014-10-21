@@ -11,6 +11,7 @@ public class Settings {
 	public static final String PASSWORD = "password";
 	public static final String TOKEN = "token";
 	public static final String TOKEN_EXPIRE_DATE = "expire";
+	public static final String MAX_CLASSES_ALLOWED = "max_classes_allowed";
 	
 	private SharedPreferences prefs;
 	
