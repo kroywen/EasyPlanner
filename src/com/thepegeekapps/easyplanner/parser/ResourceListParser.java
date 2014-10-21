@@ -8,8 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 import com.thepegeekapps.easyplanner.api.ApiResponse;
 import com.thepegeekapps.easyplanner.model.Resource;
 import com.thepegeekapps.easyplanner.util.Utilities;
@@ -18,9 +16,17 @@ public class ResourceListParser extends ApiParser {
 
 	@Override
 	public Object readData(InputStream is) {
-		List<Resource> resources = null;
 		String json = Utilities.streamToString(is);
-		Log.d("Response", json);
+		return readData(json);
+	}
+	
+	@Override
+	public Object readData(String json) {
+		return readData(json, 0);
+	}
+	
+	public Object readData(String json, long classId) {
+		List<Resource> resources = null;
 		try {
 			checkForError(json);
 			if (apiResponse.getStatus() != ApiResponse.STATUS_ERROR) {
@@ -30,6 +36,9 @@ public class ResourceListParser extends ApiParser {
 					for (int i=0; i<jsonArray.length(); i++) {
 						JSONObject jsonObj = jsonArray.getJSONObject(i);
 						Resource resource = new Resource(jsonObj);
+						if (resource != null && !resource.hasClassId() && classId != 0) {
+							resource.setClassId(classId);
+						}
 						resources.add(resource);
 					}
 				}

@@ -6,6 +6,163 @@
     android:padding="10dp"
     android:background="#448edb">
     
+    <ImageView
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_gravity="center_horizontal"
+	    android:src="@drawable/login_logo" />
     
-
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:text="@string/fill_fields" />
+    
+    <EditText 
+        android:id="@+id/email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:textColor="#448edb"
+        android:background="@drawable/edittext_background"
+        android:inputType="textEmailAddress"
+        android:maxLines="1"
+        android:drawableLeft="@drawable/icon_username"
+        android:drawablePadding="5dp"
+        android:hint="@string/email" />
+    
+    <EditText 
+        android:id="@+id/firstname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:textColor="#448edb"
+        android:background="@drawable/edittext_background"
+        android:inputType="textEmailAddress"
+        android:maxLines="1"
+        android:drawableLeft="@drawable/icon_username"
+        android:drawablePadding="5dp"
+        android:hint="@string/firstname" />
+    
+    <EditText 
+        android:id="@+id/lastname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:textColor="#448edb"
+        android:background="@drawable/edittext_background"
+        android:inputType="textEmailAddress"
+        android:maxLines="1"
+        android:drawableLeft="@drawable/icon_username"
+        android:drawablePadding="5dp"
+        android:hint="@string/lastname" />
+    
+    <EditText 
+        android:id="@+id/password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:textColor="#448edb"
+        android:background="@drawable/edittext_background"
+        android:inputType="textPassword"
+        android:maxLines="1"
+        android:drawableLeft="@drawable/icon_password"
+        android:drawablePadding="5dp"
+        android:hint="@string/password" />
+    
+    <EditText 
+        android:id="@+id/confirmPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:textColor="#448edb"
+        android:background="@drawable/edittext_background"
+        android:inputType="textPassword"
+        android:maxLines="1"
+        android:drawableLeft="@drawable/icon_password"
+        android:drawablePadding="5dp"
+        android:hint="@string/confirm_password" />
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+        
+	    <RadioGroup
+	        android:id="@+id/typeSelectorGroup"
+	   	    android:layout_width="0dp"
+	   	    android:layout_height="wrap_content"
+	   	    android:layout_weight="1"
+	   	    android:orientation="horizontal"
+	   	    android:gravity="center_vertical"
+	   	    android:layout_gravity="center_horizontal"
+	   	    android:layout_marginLeft="30dp"
+	   	    android:background="@drawable/radoigroup_background">
+	   	    
+	   	    <RadioButton 
+	   	        android:id="@+id/freeBtn"
+	   	        android:layout_width="0dp"
+	   	        android:layout_height="wrap_content"
+	   	        android:layout_weight="1"
+	   	        android:text="@string/free"
+	   	        android:gravity="center"
+	   	        android:padding="7dp"
+	   	        android:background="@drawable/rb_left_background"
+	   	        android:textColor="@color/cb_text_color"
+	   	        android:button="@null"
+	   	        android:checked="true" />
+	   	    
+	   	    <RadioButton 
+	   	        android:id="@+id/premiumBtn"
+	   	        android:layout_width="0dp"
+	   	        android:layout_height="wrap_content"
+	   	        android:layout_weight="1"
+	   	        android:layout_marginLeft="-1dp"
+	   	        android:text="@string/premium"
+	   	        android:gravity="center"
+	   	        android:padding="7dp"
+	   	        android:background="@drawable/rb_right_background"
+	   	        android:textColor="@color/cb_text_color"
+	   	        android:button="@null" />
+	   	    
+	   	</RadioGroup>
+	   	
+	    <TextView
+	        android:id="@+id/pricingLink"
+	        android:layout_width="30dp"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center_vertical"
+	        android:gravity="center"
+	        android:textColor="@android:color/white"
+	        android:textStyle="bold"
+	        android:textSize="18sp"
+	        android:text="@string/question_mark" />
+   	
+    </LinearLayout>
+   	
+    <Button
+	    android:id="@+id/createUserBtn"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop="5dp"
+   	    android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+	    android:background="@drawable/login_btn_background"
+	    android:textColor="@color/login_btn_text_color"
+	    android:text="@string/create_user" />
+    
 </LinearLayout>

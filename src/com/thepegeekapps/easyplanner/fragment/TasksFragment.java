@@ -12,7 +12,6 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +26,7 @@ import com.thepegeekapps.easyplanner.dialog.ConfirmationDialog;
 import com.thepegeekapps.easyplanner.dialog.InputDialog;
 import com.thepegeekapps.easyplanner.dialog.InputDialog.OnInputClickListener;
 import com.thepegeekapps.easyplanner.model.Task;
-import com.thepegeekapps.easyplanner.screen.MainScreen;
+import com.thepegeekapps.easyplanner.screen.BaseMainScreen;
 import com.thepegeekapps.easyplanner.util.Utilities;
 
 public class TasksFragment extends Fragment {
@@ -77,7 +76,7 @@ public class TasksFragment extends Fragment {
 	}
 	
 	public void updateViews() {
-		List<Task> filtered = (timeSelected == MainScreen.TIME_TODAY) ?
+		List<Task> filtered = (timeSelected == BaseMainScreen.TIME_TODAY) ?
 			getTodayTasks() : tasks;
 		
 		if (Utilities.isEmpty(filtered)) {
@@ -98,7 +97,6 @@ public class TasksFragment extends Fragment {
 		if (!Utilities.isEmpty(tasks)) {
 			filtered = new ArrayList<Task>();
 			for (Task task : tasks) {
-				Log.d("TaskTime", task.getDescription() + " - " + Utilities.parseTime(task.getTime(), Utilities.EEE_dd_LLL_yyyy_kk_mm_ss_Z));
 				if (task.getTime() >= dayStart && task.getTime() < dayEnd) {
 					filtered.add(task);
 				}
@@ -159,7 +157,7 @@ public class TasksFragment extends Fragment {
 					@Override
 					public void onClick(View v) {
 						task.setCompleted(!task.isCompleted());
-						((MainScreen) getActivity()).tryMarkTask(task, true);
+						((BaseMainScreen) getActivity()).tryMarkTask(task, true);
 					}
 				});
 			}
@@ -199,10 +197,10 @@ public class TasksFragment extends Fragment {
 						@Override
 						public void onClick(View v) {
 							subtask.setCompleted(!subtask.isCompleted());
-							((MainScreen) getActivity()).tryMarkTask(subtask, true);
+							((BaseMainScreen) getActivity()).tryMarkTask(subtask, true);
 							
 							task.setCompleted(task.areSubtasksCompleted());
-							((MainScreen) getActivity()).tryMarkTask(task, false);
+							((BaseMainScreen) getActivity()).tryMarkTask(task, false);
 							
 							updateViews();
 						}
@@ -238,7 +236,7 @@ public class TasksFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
-				((MainScreen) getActivity()).tryDeleteTask(task);
+				((BaseMainScreen) getActivity()).tryDeleteTask(task);
 			}
 		});
 		dialog.setCancelListener(getString(R.string.cancel), new View.OnClickListener() {
@@ -251,7 +249,7 @@ public class TasksFragment extends Fragment {
 		dialog.show(getChildFragmentManager(), "DeleteTaskDialog");
 	}
 	
-	private void showAddTaskDialog(final long parentId) {
+	public void showAddTaskDialog(final long parentId) {
 		InputDialog dialog = new InputDialog();
 		dialog.setTitle(getString(R.string.information));
 		dialog.setText(getString(R.string.describe_task));
@@ -264,7 +262,7 @@ public class TasksFragment extends Fragment {
 				} else {
 					Task parent = getTaskById(parentId);
 					Task task = new Task(0, parent.getClassId(), parentId, inputText, System.currentTimeMillis(), false);
-					((MainScreen) getActivity()).tryAddTask(task); 
+					((BaseMainScreen) getActivity()).tryAddTask(task); 
 				}
 			}
 			@Override

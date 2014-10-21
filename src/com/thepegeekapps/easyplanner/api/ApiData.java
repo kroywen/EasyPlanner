@@ -11,14 +11,19 @@ public class ApiData {
 	public static final String DELETE = "DELETE";
 	
 	public static final String AUTHENTICATE = "authenticate";
+	public static final String USER = "user";
 	public static final String CLASSES = "classes";
 	public static final String ACTIVITY = "activity";
 	public static final String RESOURCE = "resource";
 	public static final String UPLOAD = "upload";
 	public static final String HOMEWORK = "homework"; 
 	public static final String TASK = "task";
+	public static final String DATA = "data";
 	
 	public static final String PARAM_EMAIL = "email";
+	public static final String PARAM_FIRST = "first";
+	public static final String PARAM_LAST = "last";
+	public static final String PARAM_TYPE = "type";
 	public static final String PARAM_PASSWORD = "password";
 	public static final String PARAM_APIKEY = "apikey";
 	public static final String PARAM_NAME = "name";

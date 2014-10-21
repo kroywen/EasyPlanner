@@ -16,8 +16,17 @@ public class HomeworkListParser extends ApiParser {
 
 	@Override
 	public Object readData(InputStream is) {
-		List<Homework> homeworks = null;
 		String json = Utilities.streamToString(is);
+		return readData(json);
+	}
+	
+	@Override
+	public Object readData(String json) {
+		return readData(json, 0);
+	}
+	
+	public Object readData(String json, long classId) {
+		List<Homework> homeworks = null;
 		try {
 			checkForError(json);
 			if (apiResponse.getStatus() != ApiResponse.STATUS_ERROR) {
@@ -27,6 +36,9 @@ public class HomeworkListParser extends ApiParser {
 					for (int i=0; i<jsonArray.length(); i++) {
 						JSONObject jsonObj = jsonArray.getJSONObject(i);
 						Homework homework = new Homework(jsonObj);
+						if (homework != null && !homework.hasClassId() && classId != 0) {
+							homework.setClassId(classId);
+						}
 						homeworks.add(homework);
 					}
 				}

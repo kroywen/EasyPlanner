@@ -2,6 +2,7 @@ package com.thepegeekapps.easyplanner.ui.view;
 
 import java.util.Calendar;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -50,6 +51,7 @@ public class DateView extends RelativeLayout implements OnClickListener {
 		init();
 	}
 	
+	@SuppressLint("InflateParams")
 	protected void init() {
 		daysOfWeek = getContext().getResources().getStringArray(R.array.days_of_week);
 		months = getContext().getResources().getStringArray(R.array.months);
@@ -65,7 +67,8 @@ public class DateView extends RelativeLayout implements OnClickListener {
 		calendar = Calendar.getInstance();
 	}
 	
-	protected void initializeViews(View view) {
+	@SuppressLint("ClickableViewAccessibility")
+	protected void initializeViews(View view) {		
 		dayOfWeekNext = (ImageView) view.findViewById(R.id.dayOfWeekNext);
 		dayOfWeekNext.setOnClickListener(this);
 		dayOfWeekPrev = (ImageView) view.findViewById(R.id.dayOfWeekPrev);
@@ -89,6 +92,19 @@ public class DateView extends RelativeLayout implements OnClickListener {
 		yearPrev = (ImageView) view.findViewById(R.id.yearPrev);
 		yearPrev.setOnClickListener(this);
 		yearView = (TextView) view.findViewById(R.id.yearView);
+		
+		setOnTouchListener(new OnSwipeTouchListener() {
+			@Override
+			public void onSwipeRight() {
+				calendar.add(Calendar.DAY_OF_WEEK, 1);
+				setDate(calendar.getTimeInMillis());
+			}
+			@Override
+			public void onSwipeLeft() {
+				calendar.add(Calendar.DAY_OF_WEEK, -1);
+				setDate(calendar.getTimeInMillis());
+			}
+		});
 	}
 	
 	public void setDate(long time) {

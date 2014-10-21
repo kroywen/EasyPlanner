@@ -29,6 +29,8 @@ public abstract class ApiParser {
 		apiResponse.setData(data);
 	}
 	
+	public abstract Object readData(String json);
+	
 	public abstract Object readData(InputStream is);
 	
 	protected void checkForError(String json) {

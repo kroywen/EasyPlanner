@@ -16,8 +16,14 @@ public class ClasListParser extends ApiParser {
 
 	@Override
 	public Object readData(InputStream is) {
-		List<Clas> classes = null;
 		String json = Utilities.streamToString(is);
+		return readData(json);
+	}
+	
+	@Override
+	public Object readData(String json) {
+		List<Clas> classes = null;
+		
 		try {
 			checkForError(json);
 			if (apiResponse.getStatus() != ApiResponse.STATUS_ERROR) {
@@ -27,7 +33,9 @@ public class ClasListParser extends ApiParser {
 					for (int i=0; i<jsonArray.length(); i++) {
 						JSONObject jsonObj = jsonArray.getJSONObject(i);
 						Clas clas = new Clas(jsonObj);
-						classes.add(clas);
+						if (!clas.isArchived()) {
+							classes.add(clas);
+						}
 					}
 				}
 			}

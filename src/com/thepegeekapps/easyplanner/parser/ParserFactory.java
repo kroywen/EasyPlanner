@@ -11,6 +11,8 @@ public class ParserFactory {
 			return null;
 		} else if (ApiData.AUTHENTICATE.equalsIgnoreCase(command)) {
 			return new LoginParser();
+		} else if (ApiData.USER.equalsIgnoreCase(command)) {
+			return new LoginParser();
 		} else if (ApiData.CLASSES.equalsIgnoreCase(command)) {
 			if (ApiData.GET.equalsIgnoreCase(method)) {
 				return new ClasListParser();
@@ -38,6 +40,12 @@ public class ParserFactory {
 		} else if (ApiData.TASK.equalsIgnoreCase(command)) {
 			if (ApiData.GET.equalsIgnoreCase(method)) {
 				return new TaskListParser();
+			} else {
+				return new SimpleParser();
+			}
+		} else if (ApiData.DATA.equalsIgnoreCase(command)) {
+			if (ApiData.GET.equalsIgnoreCase(method)) {
+				return new DayDataParser();
 			} else {
 				return new SimpleParser();
 			}

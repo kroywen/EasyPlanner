@@ -9,5 +9,7 @@
     <dimen name="top_right_radius_right">5dp</dimen>
     <dimen name="bottom_left_radius_right">5dp</dimen>
     <dimen name="bottom_right_radius_right">0dp</dimen>
+    
+    <dimen name="task_main_padding">40dp</dimen>
 
 </resources>

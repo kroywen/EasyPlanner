@@ -65,6 +65,10 @@ public class Task {
 		this.classId = classId;
 	}
 	
+	public boolean hasClassId() {
+		return classId != 0;
+	}
+	
 	public long getParentId() {
 		return parentId;
 	}

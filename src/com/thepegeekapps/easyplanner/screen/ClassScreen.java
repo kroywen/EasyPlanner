@@ -16,8 +16,12 @@ import com.thepegeekapps.easyplanner.R;
 import com.thepegeekapps.easyplanner.fragment.ClassFragment;
 import com.thepegeekapps.easyplanner.fragment.DayFragment;
 import com.thepegeekapps.easyplanner.fragment.MonthFragment;
+import com.thepegeekapps.easyplanner.fragment.TabletDayFragment;
+import com.thepegeekapps.easyplanner.fragment.TabletMonthFragment;
+import com.thepegeekapps.easyplanner.fragment.TabletWeekFragment;
 import com.thepegeekapps.easyplanner.fragment.WeekFragment;
-import com.thepegeekapps.easyplanner.storage.db.DatabaseHelper;
+import com.thepegeekapps.easyplanner.model.Clas;
+import com.thepegeekapps.easyplanner.util.Utilities;
 
 public class ClassScreen extends BaseScreen implements OnClickListener, OnCheckedChangeListener {
 	
@@ -42,8 +46,8 @@ public class ClassScreen extends BaseScreen implements OnClickListener, OnChecke
 	private void getIntentData() {
 		Intent intent = getIntent();
 		if (intent != null) {
-			classId = intent.getLongExtra(DatabaseHelper.FIELD_ID, 0);
-			className = intent.getStringExtra(DatabaseHelper.FIELD_NAME);
+			classId = intent.getLongExtra(Clas.CLASS_ID, 0);
+			className = intent.getStringExtra(Clas.NAME);
 		}
 	}
 	
@@ -54,6 +58,7 @@ public class ClassScreen extends BaseScreen implements OnClickListener, OnChecke
 		titleView.setText(className);
 		
 		ImageView menuBtn = (ImageView) findViewById(R.id.menuBtn);
+		menuBtn.setVisibility(View.VISIBLE);
 		menuBtn.setImageResource(R.drawable.back_icon);
 		menuBtn.setOnClickListener(this);
 		
@@ -64,12 +69,21 @@ public class ClassScreen extends BaseScreen implements OnClickListener, OnChecke
 	public void selectItem(int position) {
 		fragment = getClassFragment(position);
 		FragmentTransaction t = getSupportFragmentManager().beginTransaction();
+		t.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		t.replace(R.id.content, fragment).commit();
 	}
 	
 	private ClassFragment getClassFragment(int i) {
-		return (i == 0) ? DayFragment.newInstance(classId) : 
-    		(i == 1) ? WeekFragment.newInstance(classId) : MonthFragment.newInstance(classId);
+		switch (i) {
+		case 0:
+			return Utilities.isTabletDevice(this) ? TabletDayFragment.newInstance(classId) : DayFragment.newInstance(classId);
+		case 1:
+			return Utilities.isTabletDevice(this) ? TabletWeekFragment.getInstance(classId) : WeekFragment.newInstance(classId);
+		case 2:
+			return Utilities.isTabletDevice(this) ? TabletMonthFragment.getInstance(classId) : MonthFragment.newInstance(classId);
+		default:
+			return null;
+		}
 	}
 
 	@Override

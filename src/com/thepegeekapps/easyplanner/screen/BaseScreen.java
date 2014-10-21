@@ -2,9 +2,11 @@ package com.thepegeekapps.easyplanner.screen;
 
 import android.content.Context;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
@@ -17,8 +19,11 @@ import com.thepegeekapps.easyplanner.api.OnApiResponseListener;
 import com.thepegeekapps.easyplanner.dialog.InfoDialog;
 import com.thepegeekapps.easyplanner.dialog.ProgressDialog;
 import com.thepegeekapps.easyplanner.storage.Settings;
+import com.thepegeekapps.easyplanner.util.Utilities;
 
 public class BaseScreen extends FragmentActivity implements OnApiResponseListener {
+	
+	public static final String APP_TAG = "EASY_PLANNER"; 
 	
 	protected ApiResponseReceiver responseReceiver;
 	protected ProgressDialog progressDialog;
@@ -27,6 +32,8 @@ public class BaseScreen extends FragmentActivity implements OnApiResponseListene
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setRequestedOrientation(Utilities.isTabletDevice(this) ? ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE : 
+			ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 		settings = new Settings(this);
 	}
 	
@@ -39,14 +46,22 @@ public class BaseScreen extends FragmentActivity implements OnApiResponseListene
 			progressDialog = new ProgressDialog();
 		}
 		progressDialog.setText(message);
-		if (!progressDialog.isAdded()) {
-			progressDialog.show(getSupportFragmentManager(), "ProgressDialog");
+		if (!progressDialog.isVisible() && !progressDialog.isAdded()) {
+			try {
+				progressDialog.show(getSupportFragmentManager(), "ProgressDialog");
+			} catch (Exception e) { // IllegalStateException: Can not perform this action after onSaveInstanceState
+				e.printStackTrace();
+			}
 		}
 	}
 	
 	public void hideProgressDialog() {
 		if (progressDialog != null) {
-			progressDialog.dismiss();
+			try {
+				progressDialog.dismiss();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -77,7 +92,11 @@ public class BaseScreen extends FragmentActivity implements OnApiResponseListene
 		InfoDialog dialog = new InfoDialog();
 		dialog.setTitle(title);
 		dialog.setText(message);
-		dialog.show(getSupportFragmentManager(), "InfoDialog");
+		try {
+			dialog.show(getSupportFragmentManager(), "InfoDialog");
+		} catch (Exception e) { // IllegalStateException: Can not perform this action after onSaveInstanceState
+			e.printStackTrace();
+		}
 	}
 	
 	public void hideSoftKeyborad() {
@@ -91,6 +110,14 @@ public class BaseScreen extends FragmentActivity implements OnApiResponseListene
 	
 	public void showToast(String message) {
 		Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+	}
+	
+	public static void log(String tag, String message) {
+		Log.d(tag, message);
+	}
+	
+	public static void log(String message) {
+		log(APP_TAG, message);
 	}
 	
 	@Override

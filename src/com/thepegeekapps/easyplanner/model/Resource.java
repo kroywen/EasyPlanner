@@ -56,6 +56,10 @@ public class Resource {
 		this.classId = classId;
 	}
 	
+	public boolean hasClassId() {
+		return classId != 0;
+	}
+	
 	public String getTitle() {
 		return title;
 	}

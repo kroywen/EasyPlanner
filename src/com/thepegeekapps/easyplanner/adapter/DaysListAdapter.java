@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +16,6 @@ import android.widget.TextView;
 
 import com.thepegeekapps.easyplanner.R;
 import com.thepegeekapps.easyplanner.model.Activiti;
-import com.thepegeekapps.easyplanner.storage.db.DatabaseHelper;
-import com.thepegeekapps.easyplanner.storage.db.DatabaseStorage;
 import com.thepegeekapps.easyplanner.util.Utilities;
 
 public class DaysListAdapter extends BaseAdapter {
@@ -26,13 +25,11 @@ public class DaysListAdapter extends BaseAdapter {
 	private List<List<Activiti>> activities;
 	private long time;
 	private String[] daysOfWeek;
-	private long classId;
 	
-	public DaysListAdapter(Context context, List<Activiti> list, long[][] items, long time, long classId) {
+	public DaysListAdapter(Context context, List<Activiti> list, long[][] items, long time) {
 		this.context = context;
 		this.items = items;
 		this.time = Utilities.timeToMidnight(time).getTimeInMillis();
-		this.classId = classId;
 		daysOfWeek = context.getResources().getStringArray(R.array.days_of_week);	
 		generateActivitiyList(list);
 	}
@@ -52,6 +49,7 @@ public class DaysListAdapter extends BaseAdapter {
 		return 0;
 	}
 
+	@SuppressLint("InflateParams")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
@@ -90,7 +88,6 @@ public class DaysListAdapter extends BaseAdapter {
 		}
 		
 		LinearLayout activitiesContent = (LinearLayout) convertView.findViewById(R.id.activitiesContent);
-		
 		if (!Utilities.isEmpty(this.activities)) {
 			List<Activiti> activities = this.activities.get(position);
 			if (Utilities.isEmpty(activities)) {
@@ -135,6 +132,7 @@ public class DaysListAdapter extends BaseAdapter {
 		return activities;
 	}
 	
+	@SuppressLint("InflateParams")
 	private void populateActivitiesContent(LinearLayout layout, List<Activiti> activities) {
 		layout.removeAllViews();
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -147,6 +145,7 @@ public class DaysListAdapter extends BaseAdapter {
 				
 				TextView description = (TextView) view.findViewById(R.id.description);
 				description.setText(activity.getDescription());
+				description.setTextColor(0xff458edb);
 				
 				ImageView removeBtn = (ImageView) view.findViewById(R.id.removeBtn);
 				removeBtn.setVisibility(View.INVISIBLE);

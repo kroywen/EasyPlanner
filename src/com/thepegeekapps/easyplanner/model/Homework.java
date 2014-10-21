@@ -55,6 +55,10 @@ public class Homework {
 		this.classId = classId;
 	}
 	
+	public boolean hasClassId() {
+		return classId != 0;
+	}
+	
 	public String getDescription() {
 		return description;
 	}
@@ -89,7 +93,7 @@ public class Homework {
 	
 	private void parseTime() {
 		try {
-			time = Utilities.parseTime(date, Utilities.EEE_dd_LLL_yyyy_kk_mm_ss_Z);
+			time = Utilities.parseTime(date, Utilities.dd_MM_yyyy);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}

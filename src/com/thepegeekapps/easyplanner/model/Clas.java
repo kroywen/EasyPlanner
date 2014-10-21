@@ -11,11 +11,15 @@ public class Clas {
 	public static final String CLASS_ID = "class_id";
 	public static final String NAME = "name";
 	public static final String CREATED = "created";
+	public static final String PRIORITY = "priority";
+	public static final String ARCHIVED = "archived";
 	
 	private long id;
 	private String name;
 	private long time;
 	private String created;
+	private int priority;
+	private boolean archived;
 	
 	public Clas() {}
 	
@@ -23,6 +27,8 @@ public class Clas {
 		this.id = jsonObj.optLong(CLASS_ID);
 		this.name = jsonObj.optString(NAME);
 		this.created = jsonObj.optString(CREATED);
+		this.priority = jsonObj.optInt(PRIORITY);
+		this.archived = jsonObj.optInt(ARCHIVED) == 1;
 		parseTime();
 	}
 	
@@ -62,6 +68,22 @@ public class Clas {
 	
 	public void setCreated(String created) {
 		this.created = created;
+	}
+	
+	public int getPriority() {
+		return priority;
+	}
+	
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+	
+	public boolean isArchived() {
+		return archived;
+	}
+	
+	public void setArchived(boolean archived) {
+		this.archived = archived;
 	}
 	
 	@Override

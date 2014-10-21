@@ -13,8 +13,13 @@ public class LoginParser extends ApiParser {
 
 	@Override
 	public Object readData(InputStream is) {
-		String token = null;
 		String json = Utilities.streamToString(is);
+		return readData(json);
+	}
+	
+	@Override
+	public Object readData(String json) {
+		String token = null;
 		try {
 			checkForError(json);
 			if (apiResponse.getStatus() != ApiResponse.STATUS_ERROR) {

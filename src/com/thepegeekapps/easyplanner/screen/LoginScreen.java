@@ -93,7 +93,8 @@ public class LoginScreen extends BaseScreen implements OnClickListener {
 	}
 	
 	private void startMainScreen() {
-		Intent intent = new Intent(this, MainScreen.class);
+		Intent intent = new Intent(this, 
+			Utilities.isTabletDevice(this) ? TabletMainScreen.class : MainScreen.class);
 		startActivity(intent);
 		finish();
 	}

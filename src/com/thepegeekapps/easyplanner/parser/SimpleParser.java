@@ -8,5 +8,10 @@ public class SimpleParser extends ApiParser {
 	public Object readData(InputStream is) {
 		return null;
 	}
+	
+	@Override
+	public Object readData(String json) {
+		return null;
+	}
 
 }

@@ -90,6 +90,7 @@ public class InputDialog extends DialogFragment implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.okBtn:
+			hideSoftKeyborad();
 			if (listener != null) {
 				String inputText = inputView.getText().toString().trim();
 				listener.onInputOkClick(inputText);

@@ -10,13 +10,16 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.Locale;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
+import android.util.Base64;
 
 public class Utilities {
 	
@@ -143,6 +146,39 @@ public class Utilities {
 		return items; 
 	}
 	
+	public static long[] generateTabletMonthItems(long time) {
+		Calendar c = timeToMidnight(time);
+		LinkedList<Long> list = new LinkedList<Long>();
+		
+		c.set(Calendar.DAY_OF_MONTH, 1);
+		int month = c.get(Calendar.MONTH);
+		while (c.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+			c.add(Calendar.DAY_OF_MONTH, -1);
+			list.addFirst(c.getTimeInMillis());
+		}
+		
+		c.set(Calendar.DAY_OF_MONTH, 1);
+		c.set(Calendar.MONTH, month);
+		int lastDay = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+		while (c.get(Calendar.DAY_OF_MONTH) != lastDay) {
+			list.add(c.getTimeInMillis());
+			c.add(Calendar.DAY_OF_MONTH, 1);
+		}
+		
+		while (c.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+			list.addLast(c.getTimeInMillis());
+			c.add(Calendar.DAY_OF_MONTH, 1);
+		}
+		list.addLast(c.getTimeInMillis());
+		
+		long[] items = new long[list.size()];
+		for (int i=0; i<list.size(); i++) {
+			items[i] = list.get(i);
+		}
+		
+		return items;
+	}
+	
 	public static String addLeadingZero(int day) {
 		return (day / 10 == 0) ? "0" + day : String.valueOf(day);
 	}
@@ -215,6 +251,18 @@ public class Utilities {
 			}
 		}
 		return true;
+	}
+	
+	public static boolean isTabletDevice(Context context) {
+		boolean large = (context.getResources().getConfiguration().screenLayout & 
+			Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE;
+		boolean xlarge = (context.getResources().getConfiguration().screenLayout & 
+				Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE;
+		return large || xlarge;
+	}
+	
+	public static String generateDeveloperPayload(String src) {
+		return src != null ? Base64.encodeToString(src.getBytes(), 0) : null;
 	}
 
 }

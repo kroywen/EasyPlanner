@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+    
+	<RelativeLayout 
+	    android:layout_width="0dp"
+	    android:layout_height="match_parent"
+	    android:layout_weight="1">
+	    
+		<LinearLayout 
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"
+		    android:orientation="vertical" 
+		    android:background="#344c6b">
+		    
+		    <RelativeLayout 
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:paddingLeft="80dp"
+		        android:background="#031b35">
+		        
+		        <ImageView
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_alignParentLeft="true"
+		            android:layout_centerVertical="true"
+		            android:src="@drawable/logo2" />
+		        
+		        <ImageView
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_alignParentRight="true"
+		            android:padding="12dp"
+		            android:src="@drawable/menu_icon"
+		            android:visibility="invisible" />
+		        
+		    </RelativeLayout>
+		    
+		    <View
+		        android:layout_width="match_parent"
+		        android:layout_height="1dp"
+		        android:background="#000f1f" />
+		    
+		    <LinearLayout 
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:gravity="left|center_vertical"
+		        android:paddingLeft="100dp"
+		        android:background="#082a4f">
+		        
+		        <TextView
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:textColor="@android:color/white"
+		            android:drawablePadding="7dp"
+		            android:drawableLeft="@drawable/settings_icon"
+		            android:gravity="center"
+		            android:textSize="18sp"
+		            android:text="@string/settings" />
+		        
+		        <ImageView
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:padding="8dp"
+		            android:src="@drawable/icon_add_dark"
+		            android:visibility="invisible" />
+		        
+		    </LinearLayout>
+		    
+		    <ListView
+		        android:id="@+id/menuList"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:cacheColorHint="@android:color/transparent"
+		        android:dividerHeight="1px"
+		        android:divider="#2a4464"
+		        android:listSelector="@drawable/list_item_selector" />
+		
+		</LinearLayout>
+		
+		<View
+		    android:layout_width="19px"
+		    android:layout_height="match_parent"
+		    android:layout_alignParentLeft="true"
+		    android:background="@drawable/menu_shadow" />
+	
+	</RelativeLayout>
+	
+	<View 
+	    android:layout_width="50dip"
+	    android:layout_height="match_parent"
+	    android:background="#344c6b" />
+
+</LinearLayout>

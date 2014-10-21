@@ -19,9 +19,8 @@ import com.thepegeekapps.easyplanner.R;
 import com.thepegeekapps.easyplanner.adapter.ClassAdapter;
 import com.thepegeekapps.easyplanner.dialog.ConfirmationDialog;
 import com.thepegeekapps.easyplanner.model.Clas;
+import com.thepegeekapps.easyplanner.screen.BaseMainScreen;
 import com.thepegeekapps.easyplanner.screen.ClassScreen;
-import com.thepegeekapps.easyplanner.screen.MainScreen;
-import com.thepegeekapps.easyplanner.storage.db.DatabaseHelper;
 import com.thepegeekapps.easyplanner.util.Utilities;
 
 public class ClassesFragment extends Fragment implements OnItemClickListener {
@@ -63,7 +62,7 @@ public class ClassesFragment extends Fragment implements OnItemClickListener {
 	}
 	
 	public void updateViews() {
-		List<Clas> filtered = (timeSelected == MainScreen.TIME_TODAY) ?
+		List<Clas> filtered = (timeSelected == BaseMainScreen.TIME_TODAY) ?
 			getTodayClasses() : classes;
 		
 		if (Utilities.isEmpty(filtered)) {
@@ -85,7 +84,7 @@ public class ClassesFragment extends Fragment implements OnItemClickListener {
 		if (!Utilities.isEmpty(classes)) {
 			filtered = new ArrayList<Clas>();
 			for (Clas clas : classes) {
-				if (clas.getTime() > dayStart && clas.getTime() < dayEnd) {
+				if (clas.getTime() >= dayStart && clas.getTime() < dayEnd) {
 					filtered.add(clas);
 				}
 			}
@@ -101,7 +100,7 @@ public class ClassesFragment extends Fragment implements OnItemClickListener {
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
-				((MainScreen) getActivity()).tryDeleteClass(clas);
+				((BaseMainScreen) getActivity()).tryDeleteClass(clas);
 				
 			}
 		});
@@ -119,8 +118,8 @@ public class ClassesFragment extends Fragment implements OnItemClickListener {
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Clas clas = adapter.getItem(position);
 		Intent intent = new Intent(getActivity(), ClassScreen.class);
-		intent.putExtra(DatabaseHelper.FIELD_ID, clas.getId());
-		intent.putExtra(DatabaseHelper.FIELD_NAME, clas.getName());
+		intent.putExtra(Clas.CLASS_ID, clas.getId());
+		intent.putExtra(Clas.NAME, clas.getName());
 		startActivity(intent);
 	}
 	

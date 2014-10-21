@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_alignParentTop="true"
+            android:background="#f6f9fd" />
+        
+        <TextView
+            android:id="@+id/date1View"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/today_marker"
+            android:textColor="@android:color/white"
+            android:textSize="28sp"
+            android:gravity="top|center_horizontal"
+            android:paddingTop="4dp" />
+        
+        <TextView
+            android:id="@+id/day1View"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/date1View"
+            android:textColor="#dcdfe3"
+            android:textSize="18sp" />
+        
+        <TextView
+            android:id="@+id/date2View"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/day1View"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/today_marker"
+            android:textColor="@android:color/white"
+            android:textSize="28sp"
+            android:gravity="top|center_horizontal"
+            android:paddingTop="4dp"
+            android:visibility="gone" />
+        
+        <TextView
+            android:id="@+id/day2View"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/date2View"
+            android:textColor="#dcdfe3"
+            android:textSize="18sp"
+            android:visibility="gone" />
+        
+    </RelativeLayout>
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+	    
+	    <ScrollView 
+			android:layout_width="match_parent"
+	   		android:layout_height="match_parent">
+	    <LinearLayout 
+	        android:id="@+id/activitiesContent"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical"
+	        android:padding="5dp"
+	        android:visibility="gone" />
+	    </ScrollView>
+	    
+	    <TextView 
+            android:id="@+id/activitiesEmptyView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:padding="10dp"
+            android:textColor="#b0b0b0"
+            android:textSize="16sp"
+            android:text="@string/no_activities" />
+	    
+	</RelativeLayout>
+
+</merge>

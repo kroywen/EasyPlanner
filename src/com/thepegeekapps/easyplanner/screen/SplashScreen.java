@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import com.thepegeekapps.easyplanner.R;
 import com.thepegeekapps.easyplanner.storage.Settings;
+import com.thepegeekapps.easyplanner.util.Utilities;
 
 public class SplashScreen extends BaseScreen {
 	
@@ -51,7 +52,7 @@ public class SplashScreen extends BaseScreen {
     }
     
     private void startMainScreen() {
-    	Intent intent = new Intent(this, MainScreen.class);
+    	Intent intent = new Intent(this, Utilities.isTabletDevice(this) ? TabletMainScreen.class : MainScreen.class);
 		startActivity(intent);
 		finish();
     }

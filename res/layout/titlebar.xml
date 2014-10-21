@@ -25,7 +25,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:padding="12dp"
-                android:src="@drawable/menu_icon" />
+                android:src="@drawable/menu_icon"
+                android:visibility="invisible" />
             
         </RelativeLayout>
         
@@ -66,7 +67,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:src="@drawable/icon_add_dark" />
+                android:src="@drawable/icon_add_dark"
+                android:visibility="invisible" />
             
         </LinearLayout>
         

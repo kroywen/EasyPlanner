@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+	<com.thepegeekapps.easyplanner.ui.view.DateView
+		android:id="@+id/dateView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+   
+	<LinearLayout 
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="horizontal"
+		android:padding="10dp">
+       
+		<LinearLayout 
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:layout_marginRight="5dp"
+			android:orientation="vertical"
+			android:padding="1dp"
+			android:background="@drawable/bordered_box_background">
+		        
+		    <LinearLayout 
+		        android:id="@+id/mondayLayout"
+		        android:layout_width="match_parent"
+		        android:layout_height="0dp"
+		        android:layout_weight="1"
+		        android:orientation="vertical">
+		        
+		        <include layout="@layout/week_day" />
+		        
+		    </LinearLayout>
+		    
+		    <LinearLayout 
+		        android:id="@+id/tuesdayLayout"
+		        android:layout_width="match_parent"
+		        android:layout_height="0dp"
+		        android:layout_weight="1"
+		        android:orientation="vertical">
+		        
+		        <include layout="@layout/week_day" />
+		        
+		    </LinearLayout>
+		    
+		    <LinearLayout 
+		        android:id="@+id/wednesdayLayout"
+		        android:layout_width="match_parent"
+		        android:layout_height="0dp"
+		        android:layout_weight="1"
+		        android:orientation="vertical">
+		        
+		        <include layout="@layout/week_day" />
+		        
+		    </LinearLayout>
+           
+       </LinearLayout>
+       
+       <LinearLayout 
+           android:layout_width="0dp"
+           android:layout_height="match_parent"
+           android:layout_weight="1"
+           android:layout_marginLeft="5dp"
+           android:orientation="vertical"
+           android:padding="1dp"
+           android:background="@drawable/bordered_box_background">
+           
+            <LinearLayout 
+		        android:id="@+id/thursdayLayout"
+		        android:layout_width="match_parent"
+		        android:layout_height="0dp"
+		        android:layout_weight="1"
+		        android:orientation="vertical">
+		        
+		        <include layout="@layout/week_day" />
+		        
+		    </LinearLayout>
+		    
+		    <LinearLayout 
+		        android:id="@+id/fridayLayout"
+		        android:layout_width="match_parent"
+		        android:layout_height="0dp"
+		        android:layout_weight="1"
+		        android:orientation="vertical">
+		        
+		        <include layout="@layout/week_day" />
+		        
+		    </LinearLayout>
+		    
+		    <LinearLayout 
+		        android:id="@+id/weekendLayout"
+		        android:layout_width="match_parent"
+		        android:layout_height="0dp"
+		        android:layout_weight="1"
+		        android:orientation="vertical">
+		        
+		        <include layout="@layout/week_day" />
+		        
+		    </LinearLayout>
+           
+       </LinearLayout>
+       
+   </LinearLayout>
+
+</LinearLayout>
